@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import API_URL from '../config/api'
 
 export default function Transactions() {
   const navigate = useNavigate()
@@ -51,7 +52,7 @@ export default function Transactions() {
         ...(categoryFilter && { category: categoryFilter })
       })
 
-      const response = await fetch(`http://localhost:4000/api/transaction?${params}`, {
+      const response = await fetch(`${API_URL}/api/transaction?${params}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const data = await response.json()
@@ -67,7 +68,7 @@ export default function Transactions() {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:4000/api/transaction/stats/summary', {
+      const response = await fetch(`${API_URL}/api/transaction/stats/summary`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const data = await response.json()
@@ -82,8 +83,8 @@ export default function Transactions() {
     try {
       const token = localStorage.getItem('token')
       const url = editingId 
-        ? `http://localhost:4000/api/transaction/${editingId}`
-        : 'http://localhost:4000/api/transaction'
+        ? `${API_URL}/api/transaction/${editingId}`
+        : `${API_URL}/api/transaction`
       
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
@@ -110,7 +111,7 @@ export default function Transactions() {
     if (!confirm('Delete this transaction?')) return
     try {
       const token = localStorage.getItem('token')
-      await fetch(`http://localhost:4000/api/transaction/${id}`, {
+      await fetch(`${API_URL}/api/transaction/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       })

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import API_URL from '../config/api'
 
 export default function Budget() {
   const navigate = useNavigate()
@@ -21,7 +22,7 @@ export default function Budget() {
   const fetchBudgets = async () => {
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:4000/api/budget', {
+      const response = await fetch(`${API_URL}/api/budget`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const data = await response.json()
@@ -38,8 +39,8 @@ export default function Budget() {
     try {
       const token = localStorage.getItem('token')
       const url = editingId 
-        ? `http://localhost:4000/api/budget/${editingId}`
-        : 'http://localhost:4000/api/budget'
+        ? `${API_URL}/api/budget/${editingId}`
+        : `${API_URL}/api/budget`
       
       const response = await fetch(url, {
         method: editingId ? 'PUT' : 'POST',
@@ -69,7 +70,7 @@ export default function Budget() {
     if (!confirm('Delete this budget goal?')) return
     try {
       const token = localStorage.getItem('token')
-      await fetch(`http://localhost:4000/api/budget/${id}`, {
+      await fetch(`${API_URL}/api/budget/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       })

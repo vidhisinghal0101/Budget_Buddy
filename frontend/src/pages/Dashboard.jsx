@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import API_URL from '../config/api'
 
 export default function Dashboard({ setIsAuthenticated }) {
   const navigate = useNavigate()
@@ -25,35 +26,35 @@ export default function Dashboard({ setIsAuthenticated }) {
       const token = localStorage.getItem('token')
       
       // Fetch stats
-      const statsRes = await fetch('http://localhost:4000/api/transaction/stats/summary', {
+      const statsRes = await fetch(`${API_URL}/api/transaction/stats/summary`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const statsData = await statsRes.json()
       setStats(statsData)
 
       // Fetch recent transactions
-      const transRes = await fetch('http://localhost:4000/api/transaction?limit=5&sortBy=date&order=desc', {
+      const transRes = await fetch(`${API_URL}/api/transaction?limit=5&sortBy=date&order=desc`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const transData = await transRes.json()
       setRecentTransactions(transData.transactions)
 
       // Fetch category breakdown
-      const categoryRes = await fetch('http://localhost:4000/api/transaction/stats/category', {
+      const categoryRes = await fetch(`${API_URL}/api/transaction/stats/category`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const categoryData = await categoryRes.json()
       setCategoryData(categoryData)
 
       // Fetch monthly trends
-      const monthlyRes = await fetch('http://localhost:4000/api/transaction/stats/monthly', {
+      const monthlyRes = await fetch(`${API_URL}/api/transaction/stats/monthly`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const monthlyData = await monthlyRes.json()
       setMonthlyData(monthlyData)
 
       // Fetch budget goals
-      const budgetRes = await fetch('http://localhost:4000/api/budget', {
+      const budgetRes = await fetch(`${API_URL}/api/budget`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const budgetData = await budgetRes.json()
