@@ -1,13 +1,18 @@
-# Full-Stack Authentication App
+# Budget Buddy 💰
 
-A modern authentication system with React frontend and Node.js backend using Prisma ORM, JWT, and Neon PostgreSQL database.
+A full-stack personal finance management application to track income, expenses, and manage your budget effectively.
 
 ## Features
 
-- 🔐 JWT Authentication
-- 🎨 Clean UI with Tailwind CSS (blue, cyan, emerald, teal color scheme)
-- 📱 Responsive design
-- 🔒 Secure password hashing with bcrypt
+- 🔐 JWT Authentication (Login/Signup)
+- 💳 Transaction Management (CRUD Operations)
+- 🔍 Search transactions by name/description
+- 🎯 Filter by amount range, type, and category
+- 📊 Sort by date, amount, or name (ascending/descending)
+- 📄 Pagination for transaction history
+- 📈 Financial statistics dashboard
+- 💰 Estimated in-hand salary calculation
+- 🎨 Clean UI with Tailwind CSS
 - 🗄️ Neon PostgreSQL database with Prisma ORM
 
 ## Setup Instructions
@@ -92,12 +97,48 @@ Frontend will run on `http://localhost:3000`
 
 ## API Endpoints
 
-- `POST /api/auth/signup` - Create new user
-- `POST /api/auth/login` - Login user
-- `GET /api/health` - Health check
+### Authentication
+- `POST /api/auth/signup` - Register new user (Public)
+- `POST /api/auth/login` - Login user (Public)
+
+### Transactions (Protected)
+- `GET /api/transaction` - Get all transactions with filters (Authenticated)
+  - Query params: search, minAmount, maxAmount, type, category, sortBy, order, page, limit
+- `GET /api/transaction/:id` - Get single transaction (Authenticated)
+- `POST /api/transaction` - Create transaction (Authenticated)
+- `PUT /api/transaction/:id` - Update transaction (Authenticated)
+- `DELETE /api/transaction/:id` - Delete transaction (Admin/Owner only)
+- `GET /api/transaction/stats/summary` - Get financial statistics (Authenticated)
+- `GET /api/transaction/stats/category` - Get expense breakdown by category (Authenticated)
+- `GET /api/transaction/stats/monthly` - Get monthly income/expense trends (Authenticated)
+
+### Budget Goals (Protected)
+- `GET /api/budget` - Get all budget goals with current spending (Authenticated)
+- `POST /api/budget` - Create budget goal (Authenticated)
+- `PUT /api/budget/:id` - Update budget limit (Authenticated)
+- `DELETE /api/budget/:id` - Delete budget goal (Authenticated)
+
+## Features Implemented
+
+✅ **CRUD Operations**: Create, Read, Update, Delete transactions
+✅ **Searching**: Search by transaction name or description
+✅ **Filtering**: Filter by amount range (min/max), type (income/expense), category
+✅ **Sorting**: Sort by date, amount, or name in ascending/descending order
+✅ **Pagination**: Navigate through transaction history with page controls
+✅ **Authentication**: JWT-based secure authentication
+✅ **Role-based Access**: Admin can delete any transaction
+✅ **Dashboard Analytics**:
+   - Financial overview with 4 key metrics
+   - Pie chart for expense breakdown by category
+   - Line chart for monthly income/expense trends
+   - Recent transactions list
+   - Budget goals with progress bars
+✅ **Budget Management**: Set spending limits per category and track progress
+✅ **Visual Charts**: Interactive charts using Recharts library
 
 ## Color Scheme
 
-- Login: Blue & Cyan gradients
-- Signup: Emerald & Teal gradients
-- Dashboard: Slate & Gray with accent colors
+- Primary: Emerald & Teal gradients
+- Income: Green tones
+- Expenses: Red tones
+- UI: Slate & Gray with accent colors

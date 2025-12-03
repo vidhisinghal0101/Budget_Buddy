@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
+import Transactions from './pages/Transactions'
+import Budget from './pages/Budget'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -20,6 +22,14 @@ function App() {
         <Route 
           path="/dashboard" 
           element={isAuthenticated ? <Dashboard setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/transactions" 
+          element={isAuthenticated ? <Transactions /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/budget" 
+          element={isAuthenticated ? <Budget /> : <Navigate to="/login" />} 
         />
         <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
       </Routes>
