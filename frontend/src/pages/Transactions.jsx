@@ -226,26 +226,26 @@ export default function Transactions() {
               placeholder="Search transactions..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="px-4 py-2 border border-main rounded-lg bg-bg-main text-main focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+              className="px-4 py-2 border border-main rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
             />
             <input
               type="number"
               placeholder="Min amount"
               value={minAmount}
               onChange={(e) => setMinAmount(e.target.value)}
-              className="px-4 py-2 border border-main rounded-lg bg-bg-main text-main focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+              className="px-4 py-2 border border-main rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
             />
             <input
               type="number"
               placeholder="Max amount"
               value={maxAmount}
               onChange={(e) => setMaxAmount(e.target.value)}
-              className="px-4 py-2 border border-main rounded-lg bg-bg-main text-main focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+              className="px-4 py-2 border border-main rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
             />
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-2 border border-main rounded-lg bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none"
+              className="px-4 py-2 border border-main rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none"
             >
               <option value="">All Types</option>
               <option value="income">Income</option>
@@ -256,7 +256,7 @@ export default function Transactions() {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="px-4 py-2 border border-main rounded-lg bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none"
+              className="px-4 py-2 border border-main rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none"
             >
               <option value="">All Categories</option>
               {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
@@ -264,7 +264,7 @@ export default function Transactions() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border border-main rounded-lg bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none"
+              className="px-4 py-2 border border-main rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none"
             >
               <option value="date">Sort by Date</option>
               <option value="amount">Sort by Amount</option>
@@ -273,7 +273,7 @@ export default function Transactions() {
             <select
               value={order}
               onChange={(e) => setOrder(e.target.value)}
-              className="px-4 py-2 border border-main rounded-lg bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none"
+              className="px-4 py-2 border border-main rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none"
             >
               <option value="desc">Descending</option>
               <option value="asc">Ascending</option>
@@ -371,7 +371,7 @@ export default function Transactions() {
                   placeholder="e.g. Grocery Shopping"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-main rounded-xl bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none transition-all"
+                  className="w-full px-4 py-2.5 border border-main rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none transition-all"
                   required
                 />
               </div>
@@ -383,7 +383,7 @@ export default function Transactions() {
                   placeholder="0.00"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-main rounded-xl bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none transition-all"
+                  className="w-full px-4 py-2.5 border border-main rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none transition-all"
                   required
                 />
               </div>
@@ -393,7 +393,7 @@ export default function Transactions() {
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-main rounded-xl bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none"
+                    className="w-full px-4 py-2.5 border border-main rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none"
                     required
                   >
                     <option value="expense">Expense</option>
@@ -405,7 +405,7 @@ export default function Transactions() {
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-main rounded-xl bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none"
+                    className="w-full px-4 py-2.5 border border-main rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none"
                     required
                   >
                     <option value="">Select</option>
@@ -419,7 +419,7 @@ export default function Transactions() {
                   placeholder="Notes about this transaction..."
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-main rounded-xl bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none transition-all"
+                  className="w-full px-4 py-2.5 border border-main rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none transition-all"
                   rows="3"
                 />
               </div>

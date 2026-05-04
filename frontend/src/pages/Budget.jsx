@@ -282,7 +282,7 @@ export default function Budget() {
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-main rounded-xl bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none"
+                  className="w-full px-4 py-2.5 border border-main rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none"
                   required
                   disabled={editingId}
                 >
@@ -304,7 +304,7 @@ export default function Budget() {
                   placeholder="5000"
                   value={formData.limit}
                   onChange={(e) => setFormData({ ...formData, limit: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-main rounded-xl bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none transition-all"
+                  className="w-full px-4 py-2.5 border border-main rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none transition-all"
                   required
                 />
               </div>
