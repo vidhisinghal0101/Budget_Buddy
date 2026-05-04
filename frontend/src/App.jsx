@@ -10,12 +10,9 @@ import Budget from './pages/Budget'
 import CurrencyConverter from './pages/CurrencyConverter'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    setIsAuthenticated(!!token)
-  }, [])
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem('token')
+  })
 
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>

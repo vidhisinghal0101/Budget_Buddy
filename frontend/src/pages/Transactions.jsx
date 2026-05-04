@@ -157,25 +157,25 @@ export default function Transactions() {
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">{currency.symbol}</span>
               </div>
-              <span className="text-xl font-bold text-main">Budget Buddy</span>
+              <span className="text-xl font-semibold text-main">Budget Buddy</span>
             </div>
-            <div className="flex items-center space-x-8">
-              <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-1">
                 <button
                   onClick={() => navigate('/dashboard')}
-                  className="px-2 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
                 >
                   Dashboard
                 </button>
                 <button
                   onClick={() => navigate('/budget')}
-                  className="px-2 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
                 >
                   Budget
                 </button>
                 <button
                   onClick={() => navigate('/converter')}
-                  className="px-2 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
                 >
                   Converter
                 </button>

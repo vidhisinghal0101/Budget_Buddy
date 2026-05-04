@@ -1,19 +1,22 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
-import nodemailer from 'nodemailer';
 import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// POST /api/auth/signup
 router.post('/signup', async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, pin } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    if (!pin || !/^\d{4}$/.test(pin)) {
+      return res.status(400).json({ error: 'A 4-digit PIN is required' });
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -22,8 +25,10 @@ router.post('/signup', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPin = await bcrypt.hash(pin, 10);
+
     const user = await prisma.user.create({
-      data: { email, password: hashedPassword, name }
+      data: { email, password: hashedPassword, name, pin: hashedPin }
     });
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -38,6 +43,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+// POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -68,120 +74,100 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/forgot-password', async (req, res) => {
+// POST /api/auth/verify-user
+// Step 1: check if username (email) exists
+router.post('/verify-user', async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      // Return 200 even if user doesn't exist for security reasons
-      return res.json({ message: 'If that email is in our database, we will send a reset link.' });
+      return res.status(404).json({ error: 'User does not exist' });
     }
 
-    // Generate secure token
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
-
-    await prisma.user.update({
-      where: { email },
-      data: {
-        resetPasswordToken: resetToken,
-        resetPasswordExpires
-      }
-    });
-
-    // Generate reset link
-    const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
-
-    // Send email using nodemailer
-    let transporter;
-    let senderEmail = process.env.EMAIL_USER;
-
-    // If no real email is configured, use Ethereal (a temporary test email service)
-    if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'your-email@gmail.com') {
-      const testAccount = await nodemailer.createTestAccount();
-      transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass,
-        },
-      });
-      senderEmail = '"Budget Buddy App" <noreply@budgetbuddy.app>';
-    } else {
-      transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-        }
-      });
-    }
-
-    const mailOptions = {
-      from: senderEmail,
-      to: email,
-      subject: 'Budget Buddy - Password Reset',
-      html: `
-        <div style="font-family: sans-serif; max-w-md: 600px; margin: 0 auto;">
-          <h2>Password Reset Request</h2>
-          <p>You requested a password reset for your Budget Buddy account.</p>
-          <p>Click the link below to set a new password. This link will expire in 1 hour.</p>
-          <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background-color: #10b981; color: white; text-decoration: none; border-radius: 5px; margin: 15px 0;">Reset Password</a>
-          <p>If you didn't request this, you can safely ignore this email.</p>
-        </div>
-      `
-    };
-
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`Password reset email sent successfully to ${email}`);
-    
-    if (info.messageId && nodemailer.getTestMessageUrl(info)) {
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    }
-
-    res.json({ message: 'If that email is in our database, we will send a reset link.' });
+    res.json({ message: 'User found' });
   } catch (error) {
-    console.error('Forgot password error:', error);
+    console.error('Verify user error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-router.post('/reset-password', async (req, res) => {
+// POST /api/auth/verify-pin
+// Step 2: verify the 4-digit PIN
+router.post('/verify-pin', async (req, res) => {
   try {
-    const { token, newPassword } = req.body;
-    if (!token || !newPassword) {
-      return res.status(400).json({ error: 'Token and new password are required' });
+    const { email, pin } = req.body;
+    if (!email || !pin) {
+      return res.status(400).json({ error: 'Email and PIN are required' });
     }
 
-    // Find user with token and check expiry
-    const user = await prisma.user.findFirst({
-      where: {
-        resetPasswordToken: token,
-        resetPasswordExpires: { gt: new Date() } // Expires is greater than now
-      }
-    });
+    if (!/^\d{4}$/.test(pin)) {
+      return res.status(400).json({ error: 'PIN must be exactly 4 digits' });
+    }
 
+    const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(400).json({ error: 'Password reset token is invalid or has expired.' });
+      return res.status(404).json({ error: 'User does not exist' });
+    }
+
+    if (!user.pin) {
+      return res.status(400).json({ error: 'No PIN set for this account' });
+    }
+
+    const isValidPin = await bcrypt.compare(pin, user.pin);
+    if (!isValidPin) {
+      return res.status(401).json({ error: 'Incorrect PIN' });
+    }
+
+    res.json({ message: 'PIN verified' });
+  } catch (error) {
+    console.error('Verify PIN error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// POST /api/auth/reset-password-pin
+// Step 3: reset password after PIN verified
+router.post('/reset-password-pin', async (req, res) => {
+  try {
+    const { email, pin, newPassword } = req.body;
+
+    if (!email || !pin || !newPassword) {
+      return res.status(400).json({ error: 'Email, PIN, and new password are required' });
+    }
+
+    if (!/^\d{4}$/.test(pin)) {
+      return res.status(400).json({ error: 'PIN must be exactly 4 digits' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ error: 'User does not exist' });
+    }
+
+    if (!user.pin) {
+      return res.status(400).json({ error: 'No PIN set for this account' });
+    }
+
+    // Re-verify PIN on final step to prevent bypass
+    const isValidPin = await bcrypt.compare(pin, user.pin);
+    if (!isValidPin) {
+      return res.status(401).json({ error: 'Incorrect PIN' });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update user
     await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        password: hashedPassword,
-        resetPasswordToken: null,
-        resetPasswordExpires: null
-      }
+      where: { email },
+      data: { password: hashedPassword }
     });
 
-    res.json({ message: 'Password has been updated successfully.' });
+    res.json({ message: 'Password reset successfully' });
   } catch (error) {
     console.error('Reset password error:', error);
     res.status(500).json({ error: 'Server error' });
@@ -189,3 +175,34 @@ router.post('/reset-password', async (req, res) => {
 });
 
 export default router;
+
+// DELETE /api/auth/delete-account
+// Permanently delete account — requires password confirmation
+import { authenticateToken } from '../middleware/auth.js';
+
+router.delete('/delete-account', authenticateToken, async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password) {
+      return res.status(400).json({ error: 'Password is required to delete your account' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
+      return res.status(401).json({ error: 'Incorrect password' });
+    }
+
+    // Cascade deletes transactions and budgets via Prisma schema relations
+    await prisma.user.delete({ where: { id: user.id } });
+
+    res.json({ message: 'Account deleted successfully' });
+  } catch (error) {
+    console.error('Delete account error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});

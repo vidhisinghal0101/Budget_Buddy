@@ -15,6 +15,10 @@ export default function Dashboard({ setIsAuthenticated }) {
   const [monthlyData, setMonthlyData] = useState([])
   const [budgetGoals, setBudgetGoals] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteError, setDeleteError] = useState('')
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
   const themeColors = {
     emerald: '#10b981',
@@ -83,44 +87,74 @@ export default function Dashboard({ setIsAuthenticated }) {
     navigate('/login')
   }
 
+  const handleDeleteAccount = async () => {
+    setDeleteError('')
+    if (!deletePassword) {
+      setDeleteError('Please enter your password')
+      return
+    }
+    setDeleteLoading(true)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API_URL}/api/auth/delete-account`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ password: deletePassword })
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to delete account')
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      setIsAuthenticated(false)
+      navigate('/login')
+    } catch (err) {
+      setDeleteError(err.message)
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen">
       <nav className="bg-surface shadow-sm border-b border-main">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">{currency.symbol}</span>
               </div>
-              <span className="ml-3 text-xl font-semibold text-main">Budget Buddy</span>
+              <span className="text-xl font-semibold text-main">Budget Buddy</span>
             </div>
-            <div className="flex items-center space-x-8">
-              <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-1">
                 <button
                   onClick={() => navigate('/transactions')}
-                  className="px-2 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
                 >
                   Transactions
                 </button>
                 <button
                   onClick={() => navigate('/budget')}
-                  className="px-2 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
                 >
                   Budget
                 </button>
                 <button
                   onClick={() => navigate('/converter')}
-                  className="px-2 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
                 >
                   Converter
                 </button>
               </div>
               <ThemeSelector />
               <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 font-medium"
+                onClick={() => { setShowDeleteModal(true); setDeletePassword(''); setDeleteError('') }}
+                className="px-4 py-2 border border-red-400 text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition duration-200 font-medium text-sm"
               >
-                Logout
+                Delete Account
               </button>
             </div>
           </div>
@@ -130,7 +164,26 @@ export default function Dashboard({ setIsAuthenticated }) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="text-xl text-muted">Loading dashboard...</div>
+            <svg
+              className="w-12 h-12 animate-spin text-gray-800 dark:text-gray-100"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
+            </svg>
           </div>
         ) : (
           <>
@@ -373,6 +426,79 @@ export default function Dashboard({ setIsAuthenticated }) {
           </>
         )}
       </main>
+
+      {/* Bottom actions */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+        <div className="flex items-center justify-center gap-4">
+          <button
+            onClick={handleLogout}
+            className="px-6 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium"
+          >
+            Logout
+          </button>
+          <button
+            onClick={() => { setShowDeleteModal(true); setDeletePassword(''); setDeleteError('') }}
+            className="px-6 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium"
+          >
+            Delete Account
+          </button>
+        </div>
+      </div>
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full shadow-2xl border border-red-200">
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center justify-center w-14 h-14 bg-red-100 rounded-full mb-4">
+                <svg className="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Delete Account</h2>
+              <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">
+                This will permanently delete your account, all transactions, and budget goals. This action <span className="font-bold text-red-600">cannot be undone</span>.
+              </p>
+            </div>
+
+            {deleteError && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-4">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Enter your password to confirm
+              </label>
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition text-gray-900"
+                placeholder="Your password"
+                autoFocus
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setShowDeleteModal(false); setDeletePassword(''); setDeleteError('') }}
+                className="flex-1 py-3 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50 transition font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading}
+                className="flex-1 py-3 rounded-xl bg-red-600 text-white hover:bg-red-700 transition font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleteLoading ? 'Deleting...' : 'Delete Permanently'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -14,6 +14,7 @@ model User {
   name         String?
   role         String        @default("user")
   salary               Float?
+  pin                  String?
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
   createdAt            DateTime      @default(now())
