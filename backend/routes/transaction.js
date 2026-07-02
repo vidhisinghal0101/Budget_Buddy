@@ -161,6 +161,9 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 
     // Check if user is admin or owner
     const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
+    }
     if (user.role !== 'admin' && existing.userId !== req.user.userId) {
       return res.status(403).json({ error: 'Unauthorized' });
     }
@@ -188,6 +191,9 @@ router.get('/stats/summary', authenticateToken, async (req, res) => {
     const expenses = expenseTransactions.reduce((sum, t) => sum + t.amount, 0);
 
     const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
+    if (!user) {
+      return res.status(401).json({ error: 'User not found, please log in again' });
+    }
 
     res.json({
       totalIncome: income,

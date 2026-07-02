@@ -42,35 +42,64 @@ export default function Dashboard({ setIsAuthenticated }) {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token')
+      if (!token) {
+        handleLogout()
+        return
+      }
 
       const statsRes = await fetch(`${API_URL}/api/transaction/stats/summary`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      if (statsRes.status === 401 || statsRes.status === 403) {
+        handleLogout()
+        return
+      }
       const statsData = await statsRes.json()
+      if (!statsRes.ok) throw new Error(statsData.error || 'Failed to fetch stats')
       setStats(statsData)
 
       const transRes = await fetch(`${API_URL}/api/transaction?limit=5&sortBy=date&order=desc`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      if (transRes.status === 401 || transRes.status === 403) {
+        handleLogout()
+        return
+      }
       const transData = await transRes.json()
+      if (!transRes.ok) throw new Error(transData.error || 'Failed to fetch transactions')
       setRecentTransactions(transData.transactions)
 
       const categoryRes = await fetch(`${API_URL}/api/transaction/stats/category`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      if (categoryRes.status === 401 || categoryRes.status === 403) {
+        handleLogout()
+        return
+      }
       const categoryData = await categoryRes.json()
+      if (!categoryRes.ok) throw new Error(categoryData.error || 'Failed to fetch category stats')
       setCategoryData(categoryData)
 
       const monthlyRes = await fetch(`${API_URL}/api/transaction/stats/monthly`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      if (monthlyRes.status === 401 || monthlyRes.status === 403) {
+        handleLogout()
+        return
+      }
       const monthlyData = await monthlyRes.json()
+      if (!monthlyRes.ok) throw new Error(monthlyData.error || 'Failed to fetch monthly stats')
       setMonthlyData(monthlyData)
 
       const budgetRes = await fetch(`${API_URL}/api/budget`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      if (budgetRes.status === 401 || budgetRes.status === 403) {
+        handleLogout()
+        return
+      }
       const budgetData = await budgetRes.json()
+      if (!budgetRes.ok) throw new Error(budgetData.error || 'Failed to fetch budget goals')
       setBudgetGoals(budgetData)
 
       setLoading(false)
@@ -210,7 +239,7 @@ export default function Dashboard({ setIsAuthenticated }) {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-muted">Total Income</p>
-                      <p className="text-2xl font-bold text-emerald-600">{currency.symbol}{stats.totalIncome.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-emerald-600">{currency.symbol}{stats.totalIncome?.toFixed(2) ?? '0.00'}</p>
                       <p className="text-xs text-muted mt-1">{stats.incomeCount || 0} transactions</p>
                     </div>
                     <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 dark:bg-opacity-20 rounded-lg flex items-center justify-center">
@@ -225,7 +254,7 @@ export default function Dashboard({ setIsAuthenticated }) {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-muted">Total Expenses</p>
-                      <p className="text-2xl font-bold text-red-600">{currency.symbol}{stats.totalExpenses.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-red-600">{currency.symbol}{stats.totalExpenses?.toFixed(2) ?? '0.00'}</p>
                       <p className="text-xs text-muted mt-1">{stats.expenseCount || 0} transactions</p>
                     </div>
                     <div className="w-12 h-12 bg-red-100 dark:bg-red-900 dark:bg-opacity-20 rounded-lg flex items-center justify-center">
@@ -240,7 +269,7 @@ export default function Dashboard({ setIsAuthenticated }) {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-muted">Current Balance</p>
-                      <p className="text-2xl font-bold text-blue-600">{currency.symbol}{stats.balance.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-blue-600">{currency.symbol}{stats.balance?.toFixed(2) ?? '0.00'}</p>
                       <p className="text-xs text-muted mt-1">Net savings</p>
                     </div>
                     <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 dark:bg-opacity-20 rounded-lg flex items-center justify-center">
@@ -255,7 +284,7 @@ export default function Dashboard({ setIsAuthenticated }) {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-muted">Estimated In-Hand</p>
-                      <p className="text-2xl font-bold text-orange-600">{currency.symbol}{stats.estimatedInHand.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-orange-600">{currency.symbol}{stats.estimatedInHand?.toFixed(2) ?? '0.00'}</p>
                       <p className="text-xs text-muted mt-1">After all expenses</p>
                     </div>
                     <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 dark:bg-opacity-20 rounded-lg flex items-center justify-center">
