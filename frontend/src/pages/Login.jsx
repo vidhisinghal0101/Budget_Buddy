@@ -39,69 +39,101 @@ export default function Login({ setIsAuthenticated }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4 shadow-lg shadow-primary/20">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-            </div>
-            <h2 className="text-3xl font-bold text-gray-800">Welcome Back</h2>
-            <p className="text-gray-500 mt-2">Sign in to your account</p>
+    <div className="min-h-screen bg-bg-main flex">
+      {/* Left Side - Auth Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 relative z-10">
+        <div className="w-full max-w-md space-y-8">
+          
+          <div className="text-center lg:text-left">
+            <Link to="/" className="inline-flex items-center space-x-2 mb-10">
+              <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center border border-primary/30">
+                <span className="text-sm font-black text-primary">₹</span>
+              </div>
+              <span className="text-xl font-bold tracking-tight text-main">Budget Buddy</span>
+            </Link>
+            
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-main mb-2 tracking-tight">Welcome Back</h1>
+            <p className="text-secondary text-lg">Enter your details to access your dashboard.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+              <div className="bg-expense/10 border border-expense/30 text-expense px-4 py-3 rounded-xl text-sm font-medium">
                 {error}
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <label className="block text-sm font-bold text-secondary mb-2 uppercase tracking-wider">Email Address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted"
                 placeholder="you@example.com"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-bold text-secondary uppercase tracking-wider">Password</label>
+                <Link to="/forgot-password" className="text-sm font-semibold text-primary hover:text-primary-hover transition-colors">
+                  Forgot password?
+                </Link>
+              </div>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition"
+                className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted"
                 placeholder="••••••••"
                 required
               />
-              <div className="flex justify-end mt-2">
-                <Link to="/forgot-password" className="text-sm font-medium text-primary hover:opacity-80 transition-opacity">
-                  Forgot password?
-                </Link>
-              </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-white py-3 rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-primary/20"
+              className="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? 'Authenticating...' : 'Sign In'}
             </button>
           </form>
 
-          <div className="text-center text-sm text-gray-600">
+          <p className="text-center text-secondary font-medium">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-blue-500 hover:text-blue-600 font-semibold">
-              Sign up
+            <Link to="/signup" className="text-primary hover:text-primary-hover font-bold transition-colors">
+              Create one now
             </Link>
+          </p>
+        </div>
+      </div>
+
+      {/* Right Side - Value Proposition Panel */}
+      <div className="hidden lg:flex w-1/2 bg-surface relative overflow-hidden border-l border-white/5 items-center justify-center p-12">
+        <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-primary/10 to-transparent pointer-events-none" />
+        
+        <div className="relative z-10 max-w-lg space-y-12">
+          <div className="space-y-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl border border-primary/20 mb-4">
+              <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+            </div>
+            <h2 className="text-3xl font-extrabold tracking-tight text-main">Understand your wealth trajectory.</h2>
+            <p className="text-secondary text-lg leading-relaxed">
+              Budget Buddy transforms raw transaction data into actionable financial intelligence, helping you make informed decisions effortlessly.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-6">
+            <div className="bg-bg-main p-6 rounded-2xl border border-white/5">
+              <p className="text-3xl font-extrabold text-primary mb-1">100%</p>
+              <p className="text-sm font-semibold text-secondary">Private & Secure</p>
+            </div>
+            <div className="bg-bg-main p-6 rounded-2xl border border-white/5">
+              <p className="text-3xl font-extrabold text-primary mb-1">0</p>
+              <p className="text-sm font-semibold text-secondary">Hidden Fees</p>
+            </div>
           </div>
         </div>
       </div>

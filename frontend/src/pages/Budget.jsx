@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import API_URL from '../config/api'
 import ThemeSelector from '../components/ThemeSelector'
 import { useTheme } from '../context/ThemeContext'
 
 export default function Budget() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const isActive = (path) => location.pathname === path
   const { currency } = useTheme()
   const [budgets, setBudgets] = useState([])
   const [loading, setLoading] = useState(true)
@@ -93,22 +95,22 @@ export default function Budget() {
   }
 
   const getProgressColor = (percentage) => {
-    if (percentage > 90) return 'bg-red-500'
-    if (percentage > 70) return 'bg-orange-500'
+    if (percentage > 90) return 'bg-expense'
+    if (percentage > 70) return 'bg-in-hand'
     return 'bg-primary'
   }
 
   const getProgressTextColor = (percentage) => {
-    if (percentage > 90) return 'text-red-600'
-    if (percentage > 70) return 'text-orange-600'
+    if (percentage > 90) return 'text-expense'
+    if (percentage > 70) return 'text-in-hand'
     return 'text-primary'
   }
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted">Loading...</div>
 
   return (
-    <div className="min-h-screen">
-      <nav className="bg-surface shadow-sm border-b border-main">
+    <div className="min-h-screen pb-16">
+      <nav className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-main shadow-sm transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
@@ -121,19 +123,41 @@ export default function Budget() {
               <div className="flex items-center space-x-1">
                 <button
                   onClick={() => navigate('/dashboard')}
-                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${
+                    isActive('/dashboard') || isActive('/')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                  }`}
                 >
                   Dashboard
                 </button>
                 <button
                   onClick={() => navigate('/transactions')}
-                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${
+                    isActive('/transactions')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                  }`}
                 >
                   Transactions
                 </button>
                 <button
+                  onClick={() => navigate('/budget')}
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${
+                    isActive('/budget')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                  }`}
+                >
+                  Budget
+                </button>
+                <button
                   onClick={() => navigate('/converter')}
-                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${
+                    isActive('/converter')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                  }`}
                 >
                   Converter
                 </button>
@@ -172,7 +196,7 @@ export default function Budget() {
         </div>
 
         {budgets.length === 0 ? (
-          <div className="bg-surface rounded-2xl shadow-md p-12 text-center border border-main">
+          <div className="glass-card p-12 text-center">
             <div className="w-20 h-20 bg-bg-main rounded-full flex items-center justify-center mx-auto mb-4 border border-main">
               <svg className="w-10 h-10 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -198,7 +222,7 @@ export default function Budget() {
               const remaining = budget.limit - budget.spent
 
               return (
-                <div key={budget.id} className="bg-surface rounded-xl shadow-md p-6 border border-main hover:shadow-lg transition-all duration-300">
+                <div key={budget.id} className="glass-card p-6 hover:-translate-y-1 transition-all duration-300">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-xl font-bold text-main">{budget.category}</h3>
                     <div className="flex space-x-3">
@@ -250,17 +274,17 @@ export default function Budget() {
 
                     <div className="pt-2 flex justify-between items-center border-t border-main">
                       <span className="text-sm text-muted">Remaining</span>
-                      <span className={`text-sm font-bold ${remaining >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                      <span className={`text-sm font-bold ${remaining >= 0 ? 'text-income' : 'text-expense'}`}>
                         {currency.symbol}{remaining.toFixed(2)}
                       </span>
                     </div>
 
                     {percentage > 90 && (
-                      <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-xl flex items-center space-x-2">
-                        <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="mt-4 p-3 bg-expense/10 border border-expense/30 rounded-xl flex items-center space-x-2">
+                        <svg className="w-4 h-4 text-expense" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        <p className="text-xs text-red-600 font-bold">Limit nearly reached!</p>
+                        <p className="text-xs text-expense font-bold">Limit nearly reached!</p>
                       </div>
                     )}
                   </div>
@@ -274,7 +298,7 @@ export default function Budget() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-surface rounded-2xl p-8 max-w-md w-full shadow-2xl border border-main animate-in fade-in zoom-in duration-200">
+          <div className="glass-card p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-200">
             <h2 className="text-2xl font-bold mb-6 text-main">{editingId ? 'Edit' : 'Create'} Budget Goal</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>

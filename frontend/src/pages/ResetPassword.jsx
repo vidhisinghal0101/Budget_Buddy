@@ -61,7 +61,7 @@ export default function ResetPassword() {
               </svg>
             </div>
             <h2 className="text-3xl font-bold text-gray-800">Set New Password</h2>
-            <p className="text-gray-500 mt-2">Enter your new secure password</p>
+            <p className="text-secondary mt-2">Enter your new secure password</p>
           </div>
 
           {status === 'success' ? (

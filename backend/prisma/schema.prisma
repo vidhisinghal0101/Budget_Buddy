@@ -8,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
-  password     String
-  name         String?
-  role         String        @default("user")
-  salary               Float?
-  pin                  String?
-  resetPasswordToken   String?
+  id                 String        @id @default(cuid())
+  email              String        @unique
+  password           String
+  name               String?
+  role               String        @default("user")
+  salary             Float?
+  pin                String?
+  onboardingComplete Boolean       @default(false)
+  resetPasswordToken String?
   resetPasswordExpires DateTime?
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
-  transactions         Transaction[]
-  budgets              Budget[]
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  transactions       Transaction[]
+  budgets            Budget[]
 }
 
 model Transaction {

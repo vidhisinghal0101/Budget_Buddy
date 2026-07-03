@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import API_URL from '../config/api'
 import ThemeSelector from '../components/ThemeSelector'
 import { useTheme } from '../context/ThemeContext'
 
 export default function Transactions() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const isActive = (path) => location.pathname === path
   const { currency } = useTheme()
   const [transactions, setTransactions] = useState([])
   const [stats, setStats] = useState(null)
@@ -149,8 +151,8 @@ export default function Transactions() {
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted">Loading...</div>
 
   return (
-    <div className="min-h-screen">
-      <nav className="bg-surface shadow-sm border-b border-main">
+    <div className="min-h-screen pb-16">
+      <nav className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-main shadow-sm transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
@@ -163,19 +165,37 @@ export default function Transactions() {
               <div className="flex items-center space-x-1">
                 <button
                   onClick={() => navigate('/dashboard')}
-                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${isActive('/dashboard') || isActive('/')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                    }`}
                 >
                   Dashboard
                 </button>
                 <button
+                  onClick={() => navigate('/transactions')}
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${isActive('/transactions')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                    }`}
+                >
+                  Transactions
+                </button>
+                <button
                   onClick={() => navigate('/budget')}
-                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${isActive('/budget')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                    }`}
                 >
                   Budget
                 </button>
                 <button
                   onClick={() => navigate('/converter')}
-                  className="px-3 py-2 text-muted hover:text-main transition-colors font-medium"
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${isActive('/converter')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                    }`}
                 >
                   Converter
                 </button>
@@ -199,27 +219,27 @@ export default function Transactions() {
         {/* Stats Cards */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-surface rounded-xl p-6 shadow-md border border-emerald-100 dark:border-emerald-900 dark:border-opacity-30">
+            <div className="glass-card p-6">
               <p className="text-sm text-muted">Total Income</p>
-              <p className="text-2xl font-bold text-emerald-600">{currency.symbol}{stats.totalIncome.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-income">{currency.symbol}{stats.totalIncome.toFixed(2)}</p>
             </div>
-            <div className="bg-surface rounded-xl p-6 shadow-md border border-red-100 dark:border-red-900 dark:border-opacity-30">
+            <div className="glass-card p-6">
               <p className="text-sm text-muted">Total Expenses</p>
-              <p className="text-2xl font-bold text-red-600">{currency.symbol}{stats.totalExpenses.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-expense">{currency.symbol}{stats.totalExpenses.toFixed(2)}</p>
             </div>
-            <div className="bg-surface rounded-xl p-6 shadow-md border border-blue-100 dark:border-blue-900 dark:border-opacity-30">
+            <div className="glass-card p-6">
               <p className="text-sm text-muted">Balance</p>
-              <p className="text-2xl font-bold text-blue-600">{currency.symbol}{stats.balance.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-balance">{currency.symbol}{stats.balance.toFixed(2)}</p>
             </div>
-            <div className="bg-surface rounded-xl p-6 shadow-md border border-orange-100 dark:border-orange-900 dark:border-opacity-30">
+            <div className="glass-card p-6">
               <p className="text-sm text-muted">Estimated In-Hand</p>
-              <p className="text-2xl font-bold text-orange-600">{currency.symbol}{stats.estimatedInHand.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-in-hand">{currency.symbol}{stats.estimatedInHand.toFixed(2)}</p>
             </div>
           </div>
         )}
 
         {/* Filters */}
-        <div className="bg-surface rounded-xl p-6 shadow-md mb-6 border border-main">
+        <div className="glass-card p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             <input
               type="text"
@@ -290,7 +310,7 @@ export default function Transactions() {
                 setFormData({ name: '', amount: '', type: 'expense', category: '', description: '' })
                 setShowModal(true)
               }}
-              className="px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity ml-auto font-medium"
+              className="px-4 py-2 bg-primary text-inverse rounded-lg hover:opacity-90 transition-opacity ml-auto font-medium"
             >
               + Add Transaction
             </button>
@@ -298,7 +318,7 @@ export default function Transactions() {
         </div>
 
         {/* Transactions Table */}
-        <div className="bg-surface rounded-xl shadow-md overflow-hidden border border-main">
+        <div className="glass-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-bg-main border-b border-main">
@@ -315,11 +335,11 @@ export default function Transactions() {
                 {transactions.map(t => (
                   <tr key={t.id} className="hover:bg-bg-main transition-colors">
                     <td className="px-6 py-4 text-main">{t.name}</td>
-                    <td className={`px-6 py-4 font-semibold ${t.type === 'income' ? 'text-emerald-600' : 'text-red-600'}`}>
+                    <td className={`px-6 py-4 font-semibold ${t.type === 'income' ? 'text-income' : 'text-expense'}`}>
                       {currency.symbol}{t.amount.toFixed(2)}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${t.type === 'income' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'}`}>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${t.type === 'income' ? 'bg-income/10 text-income' : 'bg-expense/10 text-expense'}`}>
                         {t.type}
                       </span>
                     </td>
@@ -361,7 +381,7 @@ export default function Transactions() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-surface rounded-2xl p-8 max-w-md w-full shadow-2xl border border-main animate-in fade-in zoom-in duration-200">
+          <div className="glass-card p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-200">
             <h2 className="text-2xl font-bold mb-6 text-main">{editingId ? 'Edit' : 'Add'} Transaction</h2>
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>

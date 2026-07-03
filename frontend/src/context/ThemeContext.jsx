@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const ThemeContext = createContext();
 
@@ -12,39 +12,29 @@ export const CURRENCIES = [
 ];
 
 export const ThemeProvider = ({ children }) => {
-  const [mode, setMode] = useState(localStorage.getItem('mode') || 'light');
-  const [colorTheme, setColorTheme] = useState(localStorage.getItem('colorTheme') || 'emerald');
+  const [mode, setMode] = useState(localStorage.getItem('mode') || 'dark');
+  const [colorTheme, setColorTheme] = useState(localStorage.getItem('colorTheme') || 'purple');
   const [currency, setCurrency] = useState(
     CURRENCIES.find(c => c.code === localStorage.getItem('currency')) || CURRENCIES[0]
   );
 
   useEffect(() => {
-    // Apply dark mode class
-    if (mode === 'dark') {
-      document.documentElement.classList.add('dark');
+    // Apply light/dark mode class
+    if (mode === 'light') {
+      document.body.classList.add('light');
     } else {
-      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('light');
     }
     localStorage.setItem('mode', mode);
-  }, [mode]);
 
-  useEffect(() => {
     // Apply color theme class
-    const themes = ['theme-blue', 'theme-purple', 'theme-rose', 'theme-amber', 'theme-indigo'];
+    const themes = ['theme-blue', 'theme-purple', 'theme-rose', 'theme-amber', 'theme-indigo', 'theme-emerald'];
     document.body.classList.remove(...themes);
-    if (colorTheme !== 'emerald') {
+    if (colorTheme !== 'purple') {
       document.body.classList.add(`theme-${colorTheme}`);
     }
     localStorage.setItem('colorTheme', colorTheme);
-  }, [colorTheme]);
-
-  const toggleMode = () => {
-    setMode(prev => (prev === 'light' ? 'dark' : 'light'));
-  };
-
-  const changeColorTheme = (color) => {
-    setColorTheme(color);
-  };
+  }, [mode, colorTheme]);
 
   const changeCurrency = (code) => {
     const found = CURRENCIES.find(c => c.code === code);
@@ -54,8 +44,16 @@ export const ThemeProvider = ({ children }) => {
     }
   };
 
+  const changeColorTheme = (color) => {
+    setColorTheme(color);
+  };
+
+  const toggleMode = () => {
+    setMode(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
   return (
-    <ThemeContext.Provider value={{ mode, colorTheme, toggleMode, changeColorTheme, currency, changeCurrency, CURRENCIES }}>
+    <ThemeContext.Provider value={{ mode, toggleMode, colorTheme, changeColorTheme, currency, changeCurrency, CURRENCIES }}>
       {children}
     </ThemeContext.Provider>
   );

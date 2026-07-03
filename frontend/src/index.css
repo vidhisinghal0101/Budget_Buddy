@@ -3,66 +3,88 @@
 @tailwind utilities;
 
 :root {
-  /* Default Theme: Emerald */
+  /* Premium Fintech Global Theme (Dark Mode Exclusive) */
+  --primary: #8B5CF6; /* Premium Purple */
+  --primary-hover: #7C3AED;
+  --primary-light: rgba(139, 92, 246, 0.15);
+  --primary-text: #A78BFA;
+  
+  --bg-main: #0B1120;
+  --bg-surface: #1E293B;
+  --text-main: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-inverse: #000000;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  
+  /* Background Image Variables */
+  --overlay: rgba(0, 0, 0, 0.65);
+  --box-bg: rgba(17, 24, 39, 0.75);
+  --grid-color: rgba(255, 255, 255, 0.03);
+
+  /* Semantic UI Colors */
+  --color-income: #10B981;
+  --color-expense: #EF4444;
+  --color-balance: #3B82F6;
+  --color-in-hand: #F59E0B;
+}
+
+body.light {
+  --bg-main: #F3F4F6;
+  --bg-surface: #FFFFFF;
+  --text-main: #111827; /* Darkest grey/black */
+  --text-secondary: #374151; /* Dark grey instead of medium grey */
+  --text-muted: #6B7280; /* Standard grey instead of light grey */
+  --text-inverse: #FFFFFF;
+  --border-color: rgba(0, 0, 0, 0.15);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  
+  --overlay: rgba(255, 255, 255, 0.85);
+  --box-bg: rgba(255, 255, 255, 0.85);
+  --grid-color: rgba(0, 0, 0, 0.05);
+}
+
+.theme-emerald {
   --primary: #10b981;
   --primary-hover: #059669;
-  --primary-light: #d1fae5;
-  --primary-text: #047857;
-  
-  --bg-main: #f9fafb;
-  --bg-surface: #ffffff;
-  --text-main: #1f2937;
-  --text-muted: #6b7280;
-  --border-color: #e5e7eb;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --overlay: rgba(255, 255, 255, 0.29);
-  --box-bg: rgba(255, 255, 255, 0.9);
+  --primary-light: rgba(16, 185, 129, 0.15);
+  --primary-text: #34d399;
 }
 
 .theme-blue {
   --primary: #3b82f6;
   --primary-hover: #2563eb;
-  --primary-light: #dbeafe;
-  --primary-text: #1d4ed8;
+  --primary-light: rgba(59, 130, 246, 0.15);
+  --primary-text: #60a5fa;
 }
 
 .theme-purple {
   --primary: #a855f7;
   --primary-hover: #9333ea;
-  --primary-light: #f3e8ff;
-  --primary-text: #7e22ce;
+  --primary-light: rgba(168, 85, 247, 0.15);
+  --primary-text: #c084fc;
 }
 
 .theme-rose {
   --primary: #f43f5e;
   --primary-hover: #e11d48;
-  --primary-light: #ffe4e6;
-  --primary-text: #be123c;
+  --primary-light: rgba(244, 63, 94, 0.15);
+  --primary-text: #fb7185;
 }
 
 .theme-amber {
   --primary: #f59e0b;
   --primary-hover: #d97706;
-  --primary-light: #fef3c7;
-  --primary-text: #b45309;
+  --primary-light: rgba(245, 158, 11, 0.15);
+  --primary-text: #fbbf24;
 }
 
 .theme-indigo {
   --primary: #6366f1;
   --primary-hover: #4f46e5;
-  --primary-light: #e0e7ff;
-  --primary-text: #4338ca;
-}
-
-.dark {
-  --bg-main: #111827;
-  --bg-surface: #1f2937;
-  --text-main: #f9fafb;
-  --text-muted: #9ca3af;
-  --border-color: #374151;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-  --overlay: rgba(0, 0, 0, 0.6);
-  --box-bg: rgba(31, 41, 55, 0.85);
+  --primary-light: rgba(99, 102, 241, 0.15);
+  --primary-text: #818cf8;
 }
 
 body {
@@ -72,15 +94,30 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: linear-gradient(var(--overlay), var(--overlay)), url("/background.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   min-height: 100vh;
   background-color: var(--bg-main);
   color: var(--text-main);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120vh; /* slightly taller to allow movement without showing white gaps */
+  z-index: -1;
+  background-image: 
+    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px),
+    linear-gradient(var(--overlay), var(--overlay)), 
+    url("/background.png");
+  background-size: 24px 24px, 24px 24px, cover, cover;
+  background-repeat: repeat, repeat, no-repeat, no-repeat;
+  background-position: center;
+  transform: translateY(calc(var(--scroll-y, 0px) * -0.15)); /* moves at 15% of scroll speed */
+  will-change: transform;
+  pointer-events: none;
 }
 
 .auth-box {
@@ -99,6 +136,9 @@ body {
 .text-main { color: var(--text-main); }
 .text-muted { color: var(--text-muted); }
 .border-main { border-color: var(--border-color); }
+.text-income { color: var(--color-income); }
+.text-expense { color: var(--color-expense); }
+.text-balance { color: var(--color-balance); }
 
 input {
   color: #000000; /* Pure black for maximum visibility */
@@ -107,3 +147,20 @@ input {
 input::placeholder {
   color: #9ca3af;
 }
+
+/* Premium Glassmorphic Cards */
+.glass-card {
+  background-color: var(--box-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+  border-radius: 1.5rem;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
+}
+

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import ThemeSelector from '../components/ThemeSelector'
 import { useTheme } from '../context/ThemeContext'
 
@@ -48,24 +48,24 @@ function CurrencySelect({ value, onChange, label }) {
 
       {open && (
         <div
-          className="absolute z-50 mt-1 w-full bg-white border-2 border-gray-300 rounded-xl shadow-2xl overflow-hidden"
+          className="absolute z-50 mt-1 w-full bg-surface border border-main rounded-xl shadow-2xl overflow-hidden"
           onMouseDown={(e) => e.preventDefault()}
         >
           {/* Search input */}
-          <div className="p-2 border-b border-gray-200">
+          <div className="p-2 border-b border-main">
             <input
               type="text"
               autoFocus
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search currency..."
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-primary outline-none"
+              className="w-full px-3 py-2 text-sm border border-main rounded-lg bg-bg-main text-main focus:ring-2 focus:ring-primary outline-none"
             />
           </div>
           {/* Options list */}
           <ul className="max-h-56 overflow-y-auto">
             {filtered.length === 0 ? (
-              <li className="px-4 py-3 text-sm text-gray-500 text-center">No results found</li>
+              <li className="px-4 py-3 text-sm text-muted text-center">No results found</li>
             ) : (
               filtered.map(c => (
                 <li
@@ -75,7 +75,7 @@ function CurrencySelect({ value, onChange, label }) {
                   className={`px-4 py-2.5 text-sm cursor-pointer flex items-center gap-2 transition-colors
                     ${c.code === value
                       ? 'bg-primary text-white font-semibold'
-                      : 'text-gray-900 hover:bg-gray-100'}`}
+                      : 'text-main hover:bg-main/5'}`}
                 >
                   <span className="w-8 text-center font-bold">{c.symbol}</span>
                   <span className="font-medium">{c.code}</span>
@@ -247,6 +247,8 @@ const SUPPORTED_CURRENCIES = [
 
 export default function CurrencyConverter({ setIsAuthenticated }) {
   const navigate = useNavigate()
+  const location = useLocation()
+  const isActive = (path) => location.pathname === path
   const { currency } = useTheme()
 
   const [fromCurrency, setFromCurrency] = useState('USD')
@@ -318,9 +320,9 @@ export default function CurrencyConverter({ setIsAuthenticated }) {
   ]
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-16">
       {/* Navbar */}
-      <nav className="bg-surface shadow-sm border-b border-main">
+      <nav className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-main shadow-sm transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
@@ -331,15 +333,51 @@ export default function CurrencyConverter({ setIsAuthenticated }) {
             </div>
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-1">
-                <button onClick={() => navigate('/dashboard')} className="px-3 py-2 text-muted hover:text-main transition-colors font-medium">Dashboard</button>
-                <button onClick={() => navigate('/transactions')} className="px-3 py-2 text-muted hover:text-main transition-colors font-medium">Transactions</button>
-                <button onClick={() => navigate('/budget')} className="px-3 py-2 text-muted hover:text-main transition-colors font-medium">Budget</button>
-                <button onClick={() => navigate('/converter')} className="px-3 py-2 text-primary font-semibold border-b-2 border-primary transition-colors">Converter</button>
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${
+                    isActive('/dashboard') || isActive('/')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                  }`}
+                >
+                  Dashboard
+                </button>
+                <button
+                  onClick={() => navigate('/transactions')}
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${
+                    isActive('/transactions')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                  }`}
+                >
+                  Transactions
+                </button>
+                <button
+                  onClick={() => navigate('/budget')}
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${
+                    isActive('/budget')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                  }`}
+                >
+                  Budget
+                </button>
+                <button
+                  onClick={() => navigate('/converter')}
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${
+                    isActive('/converter')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                  }`}
+                >
+                  Converter
+                </button>
               </div>
               <ThemeSelector />
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 font-medium"
+                className="px-3.5 py-1.5 text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"
               >
                 Logout
               </button>
@@ -352,14 +390,14 @@ export default function CurrencyConverter({ setIsAuthenticated }) {
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-extrabold text-main">Currency Converter</h1>
-          <p className="text-gray-700 dark:text-gray-400 mt-2">Real-time exchange rates powered by ExchangeRate-API</p>
+          <p className="text-main opacity-80 mt-2 font-medium">Real-time exchange rates powered by ExchangeRate-API</p>
           {lastUpdated && (
-            <p className="text-xs text-gray-700 dark:text-gray-400 mt-1">Last updated: {lastUpdated}</p>
+            <p className="text-xs text-main opacity-60 mt-1 font-medium">Last updated: {lastUpdated}</p>
           )}
         </div>
 
         {/* Main Converter Card */}
-        <div className="bg-surface rounded-2xl shadow-lg border border-main p-8 mb-8">
+        <div className="glass-card p-8 mb-8">
           {/* Amount Row */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-muted mb-2">Amount</label>
@@ -409,19 +447,19 @@ export default function CurrencyConverter({ setIsAuthenticated }) {
                 <p className="text-muted mt-2">Fetching live rates...</p>
               </div>
             ) : error ? (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-center">
+              <div className="bg-expense/10 border border-expense/30 text-expense px-4 py-3 rounded-xl text-center font-medium">
                 {error}
               </div>
             ) : result ? (
-              <div className="bg-white dark:bg-gray-800 border-2 border-primary rounded-2xl p-6 text-center shadow-md">
-                <p className="text-gray-900 dark:text-gray-100 text-sm font-semibold mb-1">
+              <div className="glass-card border-2 border-primary/50 p-6 text-center">
+                <p className="text-secondary text-sm font-semibold mb-1">
                   {getSymbol(fromCurrency)} {amount} equals
                 </p>
                 <p className="text-4xl font-bold text-primary">
                   {getSymbol(toCurrency)} {parseFloat(result).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
                 {rate && (
-                  <p className="text-gray-900 dark:text-gray-100 text-sm font-semibold mt-2">
+                  <p className="text-secondary text-sm font-semibold mt-2">
                     {getSymbol(fromCurrency)} 1 = {getSymbol(toCurrency)} {rate.toFixed(2)}
                   </p>
                 )}
@@ -437,7 +475,7 @@ export default function CurrencyConverter({ setIsAuthenticated }) {
         </div>
 
         {/* Popular Pairs */}
-        <div className="bg-surface rounded-2xl shadow-lg border border-main p-6">
+        <div className="glass-card p-6">
           <h2 className="text-lg font-semibold text-main mb-4">Popular Pairs</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {popularPairs.map(pair => (

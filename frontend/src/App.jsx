@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard'
 import Transactions from './pages/Transactions'
 import Budget from './pages/Budget'
 import CurrencyConverter from './pages/CurrencyConverter'
+import Landing from './pages/Landing'
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -37,7 +38,7 @@ function App() {
           path="/converter" 
           element={isAuthenticated ? <CurrencyConverter setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} 
         />
-        <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
+        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Landing />} />
       </Routes>
     </Router>
   )

@@ -13,6 +13,22 @@ export default function Signup({ setIsAuthenticated }) {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  // Calculate password strength
+  const getPasswordStrength = () => {
+    let score = 0
+    if (!password) return 0
+    if (password.length > 5) score += 1
+    if (password.length > 8) score += 1
+    if (/[A-Z]/.test(password)) score += 1
+    if (/[0-9]/.test(password)) score += 1
+    if (/[^A-Za-z0-9]/.test(password)) score += 1
+    return Math.min(score, 4)
+  }
+  
+  const strength = getPasswordStrength()
+  const strengthColors = ['bg-muted', 'bg-expense', 'bg-in-hand', 'bg-income', 'bg-primary']
+  const strengthLabels = ['Too Weak', 'Weak', 'Fair', 'Good', 'Strong']
+
   const handleStep1 = (e) => {
     e.preventDefault()
     setError('')
@@ -55,6 +71,7 @@ export default function Signup({ setIsAuthenticated }) {
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
       setIsAuthenticated(true)
+      // Navigate to onboarding next! (But dashboard for now until onboarding is built)
       navigate('/dashboard')
     } catch (err) {
       setError(err.message)
@@ -64,149 +81,179 @@ export default function Signup({ setIsAuthenticated }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
-
-          {/* Header */}
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4 shadow-lg shadow-primary/20">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-              </svg>
-            </div>
-            <h2 className="text-3xl font-bold text-gray-800">Create Account</h2>
-            <p className="text-gray-500 mt-2">Join us today</p>
+    <div className="min-h-screen bg-bg-main flex">
+      {/* Left Side - Auth Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 relative z-10">
+        <div className="w-full max-w-md space-y-8">
+          
+          <div className="text-center lg:text-left">
+            <Link to="/" className="inline-flex items-center space-x-2 mb-10">
+              <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center border border-primary/30">
+                <span className="text-sm font-black text-primary">₹</span>
+              </div>
+              <span className="text-xl font-bold tracking-tight text-main">Budget Buddy</span>
+            </Link>
+            
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-main mb-2 tracking-tight">Create Account</h1>
+            <p className="text-secondary text-lg">Join us today to master your finances.</p>
           </div>
 
           {/* Step indicators */}
-          <div className="flex items-center justify-center gap-2">
-            <div className={`h-2 rounded-full transition-all duration-300 ${step === 1 ? 'w-8 bg-primary' : 'w-4 bg-primary'}`} />
-            <div className={`h-2 rounded-full transition-all duration-300 ${step === 2 ? 'w-8 bg-primary' : 'w-4 bg-gray-200'}`} />
+          <div className="flex items-center justify-center lg:justify-start gap-2 mb-8">
+            <div className={`h-1.5 rounded-full transition-all duration-300 ${step === 1 ? 'w-10 bg-primary shadow-[0_0_8px_rgba(139,92,246,0.5)]' : 'w-4 bg-primary'}`} />
+            <div className={`h-1.5 rounded-full transition-all duration-300 ${step === 2 ? 'w-10 bg-primary shadow-[0_0_8px_rgba(139,92,246,0.5)]' : 'w-4 bg-white/10'}`} />
           </div>
 
-          {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-expense/10 border border-expense/30 text-expense px-4 py-3 rounded-xl text-sm font-medium">
               {error}
             </div>
           )}
 
-          {/* Step 1 — Account details */}
           {step === 1 && (
-            <form onSubmit={handleStep1} className="space-y-4">
+            <form onSubmit={handleStep1} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                <label className="block text-sm font-bold text-secondary mb-2 uppercase tracking-wider">Full Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                  className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted"
                   placeholder="John Doe"
-                  autoFocus
+                  required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <label className="block text-sm font-bold text-secondary mb-2 uppercase tracking-wider">Email Address</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition"
+                  className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted"
                   placeholder="you@example.com"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Create Password</label>
+                <label className="block text-sm font-bold text-secondary mb-2 uppercase tracking-wider">Password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition"
-                  placeholder="Min. 6 characters"
+                  className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted mb-2"
+                  placeholder="••••••••"
                   required
                 />
+                {/* Password Strength Indicator */}
+                {password.length > 0 && (
+                  <div className="flex items-center space-x-2 mt-2">
+                    <div className="flex-1 flex gap-1 h-1.5 rounded-full overflow-hidden bg-white/5">
+                      {[1, 2, 3, 4].map((level) => (
+                        <div key={level} className={`h-full flex-1 ${strength >= level ? strengthColors[strength] : 'bg-transparent'}`} />
+                      ))}
+                    </div>
+                    <span className={`text-xs font-bold ${strength > 0 ? strengthColors[strength].replace('bg-', 'text-') : 'text-muted'}`}>
+                      {strengthLabels[strength]}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                <label className="block text-sm font-bold text-secondary mb-2 uppercase tracking-wider">Confirm Password</label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition"
-                  placeholder="Confirm password"
+                  className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted"
+                  placeholder="••••••••"
                   required
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-primary text-white py-3 rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-primary/20"
+                className="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
               >
                 Continue
               </button>
             </form>
           )}
 
-          {/* Step 2 — Set Recovery PIN */}
           {step === 2 && (
-            <form onSubmit={handleStep2} className="space-y-5">
-              <div className="text-center space-y-1">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mb-2">
-                  <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-800">Set a Recovery PIN</h3>
-                <p className="text-sm text-gray-500">You'll use this 4-digit PIN to reset your password if you ever forget it.</p>
+            <form onSubmit={handleStep2} className="space-y-6">
+              <div className="text-center lg:text-left mb-6">
+                <h3 className="text-xl font-bold text-main mb-2">Set Security PIN</h3>
+                <p className="text-sm text-secondary">This 4-digit PIN will be used for quick access and sensitive actions.</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 text-center">Enter 4-digit PIN</label>
+                <label className="block text-sm font-bold text-secondary mb-2 uppercase tracking-wider">4-Digit PIN</label>
                 <input
                   type="password"
-                  inputMode="numeric"
-                  maxLength={4}
+                  maxLength="4"
                   value={pin}
-                  onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  className="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition tracking-widest text-center text-2xl font-bold"
+                  onChange={(e) => setPin(e.target.value.replace(/[^0-9]/g, ''))}
+                  className="w-full bg-surface border border-white/10 text-main text-center text-2xl tracking-[1em] rounded-xl px-4 py-4 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted placeholder:tracking-normal"
                   placeholder="••••"
                   required
-                  autoFocus
                 />
-                <p className="text-xs text-amber-600 mt-2 text-center font-medium">
-                  ⚠ Remember this PIN — it cannot be recovered if lost.
-                </p>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex space-x-4">
                 <button
                   type="button"
-                  onClick={() => { setStep(1); setError(''); setPin('') }}
-                  className="flex-1 py-3 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50 transition font-medium"
+                  onClick={() => setStep(1)}
+                  className="w-1/3 bg-surface border border-white/10 hover:border-white/20 text-main py-4 rounded-xl font-bold transition-all"
                 >
                   Back
                 </button>
                 <button
                   type="submit"
                   disabled={loading || pin.length !== 4}
-                  className="flex-1 bg-primary text-white py-3 rounded-xl hover:opacity-90 transition-all font-bold shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-2/3 bg-primary hover:bg-primary-hover text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
                 >
-                  {loading ? 'Creating account...' : 'Create Account'}
+                  {loading ? 'Creating...' : 'Create Account'}
                 </button>
               </div>
             </form>
           )}
 
-          <div className="text-center text-sm text-gray-600">
+          <p className="text-center text-secondary font-medium mt-8">
             Already have an account?{' '}
-            <Link to="/login" className="text-primary hover:opacity-80 font-semibold">
+            <Link to="/login" className="text-primary hover:text-primary-hover font-bold transition-colors">
               Sign in
             </Link>
+          </p>
+        </div>
+      </div>
+
+      {/* Right Side - Value Proposition Panel */}
+      <div className="hidden lg:flex w-1/2 bg-surface relative overflow-hidden border-l border-white/5 items-center justify-center p-12">
+        <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-tl from-primary/10 to-transparent pointer-events-none" />
+        
+        <div className="relative z-10 max-w-lg space-y-12">
+          <div className="space-y-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl border border-primary/20 mb-4">
+              <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+            </div>
+            <h2 className="text-3xl font-extrabold tracking-tight text-main">Your money, on your terms.</h2>
+            <p className="text-secondary text-lg leading-relaxed">
+              We believe financial software should be fast, private, and beautiful. Join thousands of users taking control of their financial destiny today.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-6">
+            <div className="bg-bg-main p-6 rounded-2xl border border-white/5">
+              <p className="text-3xl font-extrabold text-primary mb-1">~5 min</p>
+              <p className="text-sm font-semibold text-secondary">Setup Time</p>
+            </div>
+            <div className="bg-bg-main p-6 rounded-2xl border border-white/5">
+              <p className="text-3xl font-extrabold text-primary mb-1">0</p>
+              <p className="text-sm font-semibold text-secondary">Spam Emails</p>
+            </div>
           </div>
         </div>
       </div>
