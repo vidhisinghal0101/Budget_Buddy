@@ -106,18 +106,18 @@ export default function Budget() {
     return 'text-primary'
   }
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-muted">Loading...</div>
+  // Removed if (loading) return
 
   return (
     <div className="min-h-screen pb-16">
-      <nav className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-main shadow-sm transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-main/80 shadow-sm transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">{currency.symbol}</span>
+              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                <span className="text-white font-bold text-lg">{currency.symbol}</span>
               </div>
-              <span className="text-xl font-semibold text-main">Budget Buddy</span>
+              <span className="text-lg font-semibold tracking-tight text-main">Budget Buddy</span>
             </div>
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-1">
@@ -161,14 +161,24 @@ export default function Budget() {
                 >
                   Converter
                 </button>
+                <button
+                  onClick={() => navigate('/savings')}
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${
+                    isActive('/savings')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                  }`}
+                >
+                  Vaults
+                </button>
               </div>
               <ThemeSelector />
               <button
                 onClick={() => {
                   localStorage.clear()
-                  navigate('/login')
+                  navigate('/')
                 }}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
+                className="px-3.5 py-1.5 text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"
               >
                 Logout
               </button>
@@ -177,7 +187,20 @@ export default function Budget() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {loading ? (
+        <main className="max-w-7xl mx-auto px-6 lg:px-8 pt-20">
+          <div className="flex flex-col items-center justify-center h-[50vh] space-y-5">
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-pulse"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+            </div>
+            <p className="text-muted text-sm font-semibold tracking-wide animate-pulse">
+              Loading budget data...
+            </p>
+          </div>
+        </main>
+      ) : (
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row items-center justify-between mb-8 space-y-4 md:space-y-0">
           <div>
             <h1 className="text-3xl font-bold text-main">Budget Goals</h1>
@@ -294,6 +317,7 @@ export default function Budget() {
           </div>
         )}
       </main>
+      )}
 
       {/* Modal */}
       {showModal && (
@@ -324,7 +348,7 @@ export default function Budget() {
                 <label className="block text-sm font-medium text-muted mb-2">Monthly Limit ({currency.symbol})</label>
                 <input
                   type="number"
-                  step="0.01"
+                  step="any"
                   placeholder="5000"
                   value={formData.limit}
                   onChange={(e) => setFormData({ ...formData, limit: e.target.value })}

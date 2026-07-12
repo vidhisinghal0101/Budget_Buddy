@@ -2,7 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
-
+import { authenticateToken } from '../middleware/auth.js';
 const router = express.Router();
 const prisma = new PrismaClient();
 
@@ -54,12 +54,12 @@ router.post('/login', async (req, res) => {
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(404).json({ error: 'User does not exist' });
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Incorrect password' });
     }
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -174,11 +174,8 @@ router.post('/reset-password-pin', async (req, res) => {
   }
 });
 
-export default router;
-
 // DELETE /api/auth/delete-account
 // Permanently delete account — requires password confirmation
-import { authenticateToken } from '../middleware/auth.js';
 
 router.delete('/delete-account', authenticateToken, async (req, res) => {
   try {
@@ -206,3 +203,5 @@ router.delete('/delete-account', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+export default router;

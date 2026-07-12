@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import API_URL from '../config/api'
+import ThemeToggle from '../components/ThemeToggle'
 
 const STEPS = [
   { number: 1, label: 'Find Account' },
@@ -92,8 +93,9 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      <ThemeToggle className="absolute top-6 right-6 z-50" />
+      <div className="max-w-md w-full glass-card p-8 sm:p-12">
         <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
 
           {/* Header */}

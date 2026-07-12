@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
+import ThemeToggle from '../components/ThemeToggle'
 
 export default function Landing() {
   const { colorTheme } = useTheme()
@@ -29,6 +30,7 @@ export default function Landing() {
               <span className="text-2xl font-black tracking-tight text-main">Budget Buddy</span>
             </div>
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <Link to="/login" className="text-sm font-semibold text-secondary hover:text-main transition-colors">
                 Sign in
               </Link>
@@ -42,10 +44,26 @@ export default function Landing() {
 
       {/* Hero Section */}
       <div className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 overflow-hidden">
-        {/* Abstract Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[400px] bg-primary/20 blur-[120px] rounded-full pointer-events-none opacity-50" />
+        {/* Abstract Glow (Slower Parallax) */}
+        <div 
+          className="absolute top-0 left-1/2 w-full max-w-3xl h-[400px] bg-primary/20 blur-[120px] rounded-full pointer-events-none opacity-50 will-change-transform" 
+          style={{ transform: 'translateX(-50%) translateY(calc(var(--scroll-y, 0px) * 0.4))' }}
+        />
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
+        {/* Floating Orbs (Different Parallax Speeds) */}
+        <div 
+          className="absolute top-20 left-[10%] w-32 h-32 bg-secondary/20 blur-[60px] rounded-full pointer-events-none will-change-transform hidden sm:block"
+          style={{ transform: 'translateY(calc(var(--scroll-y, 0px) * -0.3))' }}
+        />
+        <div 
+          className="absolute top-40 right-[15%] w-48 h-48 bg-primary/30 blur-[80px] rounded-full pointer-events-none will-change-transform hidden sm:block"
+          style={{ transform: 'translateY(calc(var(--scroll-y, 0px) * 0.6))' }}
+        />
+        
+        <div 
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center will-change-transform"
+          style={{ transform: 'translateY(calc(var(--scroll-y, 0px) * -0.15))' }}
+        >
           <div className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 mb-8">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
             <span className="text-xs font-semibold tracking-wider text-secondary uppercase">Your Financial Companion</span>
@@ -72,8 +90,11 @@ export default function Landing() {
       </div>
 
       {/* Feature Grid */}
-      <div id="features" className="py-24 bg-surface border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div id="features" className="py-24 bg-surface border-t border-white/5 relative z-10">
+        <div 
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 will-change-transform"
+          style={{ transform: 'translateY(calc(var(--scroll-y, 0px) * -0.05))' }}
+        >
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">Everything you need to succeed</h2>
             <p className="text-secondary text-lg">Designed for clarity, built for speed.</p>
@@ -105,30 +126,7 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* Social Proof / Stats */}
-      <div className="py-24 border-t border-white/5 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <h2 className="text-3xl font-bold mb-12">Trusted by people who care about their wealth</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <p className="text-4xl font-extrabold text-primary mb-2">99%</p>
-              <p className="text-sm text-secondary font-medium">Uptime Guarantee</p>
-            </div>
-            <div>
-              <p className="text-4xl font-extrabold text-primary mb-2">256-bit</p>
-              <p className="text-sm text-secondary font-medium">Bank-grade Encryption</p>
-            </div>
-            <div>
-              <p className="text-4xl font-extrabold text-primary mb-2">0</p>
-              <p className="text-sm text-secondary font-medium">Hidden Fees</p>
-            </div>
-            <div>
-              <p className="text-4xl font-extrabold text-primary mb-2">24/7</p>
-              <p className="text-sm text-secondary font-medium">Financial Clarity</p>
-            </div>
-          </div>
-        </div>
-      </div>
+
 
       {/* Footer */}
       <footer className="bg-surface border-t border-white/5 py-12">

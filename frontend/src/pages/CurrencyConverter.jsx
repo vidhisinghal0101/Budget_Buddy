@@ -320,16 +320,16 @@ export default function CurrencyConverter({ setIsAuthenticated }) {
   ]
 
   return (
-    <div className="min-h-screen pb-16">
+    <div className="min-h-screen">
       {/* Navbar */}
-      <nav className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-main shadow-sm transition-all duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="sticky top-0 z-40 bg-surface/90 backdrop-blur-md border-b border-main/80 shadow-sm transition-all duration-300">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">{currency.symbol}</span>
+              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                <span className="text-white font-bold text-lg">{currency.symbol}</span>
               </div>
-              <span className="text-xl font-semibold text-main">Budget Buddy</span>
+              <span className="text-lg font-semibold tracking-tight text-main">Budget Buddy</span>
             </div>
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-1">
@@ -373,10 +373,23 @@ export default function CurrencyConverter({ setIsAuthenticated }) {
                 >
                   Converter
                 </button>
+                <button
+                  onClick={() => navigate('/savings')}
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${
+                    isActive('/savings')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                  }`}
+                >
+                  Vaults
+                </button>
               </div>
               <ThemeSelector />
               <button
-                onClick={handleLogout}
+                onClick={() => {
+                  localStorage.clear()
+                  navigate('/')
+                }}
                 className="px-3.5 py-1.5 text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"
               >
                 Logout

@@ -8,8 +8,8 @@ import Dashboard from './pages/Dashboard'
 import Transactions from './pages/Transactions'
 import Budget from './pages/Budget'
 import CurrencyConverter from './pages/CurrencyConverter'
+import Savings from './pages/Savings'
 import Landing from './pages/Landing'
-
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return !!localStorage.getItem('token')
@@ -24,19 +24,23 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route 
           path="/dashboard" 
-          element={isAuthenticated ? <Dashboard setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} 
+          element={isAuthenticated ? <Dashboard setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/" />} 
         />
         <Route 
           path="/transactions" 
-          element={isAuthenticated ? <Transactions /> : <Navigate to="/login" />} 
+          element={isAuthenticated ? <Transactions /> : <Navigate to="/" />} 
         />
         <Route 
           path="/budget" 
-          element={isAuthenticated ? <Budget /> : <Navigate to="/login" />} 
+          element={isAuthenticated ? <Budget /> : <Navigate to="/" />} 
+        />
+        <Route 
+          path="/savings" 
+          element={isAuthenticated ? <Savings /> : <Navigate to="/" />} 
         />
         <Route 
           path="/converter" 
-          element={isAuthenticated ? <CurrencyConverter setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/login" />} 
+          element={isAuthenticated ? <CurrencyConverter setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/" />} 
         />
         <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Landing />} />
       </Routes>

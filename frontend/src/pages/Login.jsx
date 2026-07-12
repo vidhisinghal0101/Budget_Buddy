@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import API_URL from '../config/api'
+import ThemeToggle from '../components/ThemeToggle'
 
 export default function Login({ setIsAuthenticated }) {
   const [email, setEmail] = useState('')
@@ -39,7 +40,8 @@ export default function Login({ setIsAuthenticated }) {
   }
 
   return (
-    <div className="min-h-screen bg-bg-main flex">
+    <div className="min-h-screen bg-bg-main flex relative">
+      <ThemeToggle className="absolute top-6 right-6 z-50" />
       {/* Left Side - Auth Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 relative z-10">
         <div className="w-full max-w-md space-y-8">
@@ -67,6 +69,8 @@ export default function Login({ setIsAuthenticated }) {
               <label className="block text-sm font-bold text-secondary mb-2 uppercase tracking-wider">Email Address</label>
               <input
                 type="email"
+                name="email"
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted"
@@ -84,6 +88,8 @@ export default function Login({ setIsAuthenticated }) {
               </div>
               <input
                 type="password"
+                name="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted"

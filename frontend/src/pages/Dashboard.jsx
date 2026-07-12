@@ -28,6 +28,7 @@ export default function Dashboard({ setIsAuthenticated }) {
   const [categoryData, setCategoryData] = useState([])
   const [monthlyData, setMonthlyData] = useState([])
   const [budgetGoals, setBudgetGoals] = useState([])
+  const [vaults, setVaults] = useState([])
   const [loading, setLoading] = useState(true)
 
   // Modals state
@@ -83,60 +84,40 @@ export default function Dashboard({ setIsAuthenticated }) {
         return
       }
 
-      const statsRes = await fetch(`${API_URL}/api/transaction/stats/summary`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      if (statsRes.status === 401 || statsRes.status === 403) {
+      const headers = { Authorization: `Bearer ${token}` }
+
+      const [statsRes, transRes, categoryRes, monthlyRes, budgetRes, vaultsRes] = await Promise.all([
+        fetch(`${API_URL}/api/transaction/stats/summary`, { headers }),
+        fetch(`${API_URL}/api/transaction?limit=5&sortBy=date&order=desc`, { headers }),
+        fetch(`${API_URL}/api/transaction/stats/category`, { headers }),
+        fetch(`${API_URL}/api/transaction/stats/monthly`, { headers }),
+        fetch(`${API_URL}/api/budget`, { headers }),
+        fetch(`${API_URL}/api/savings`, { headers })
+      ])
+
+      const responses = [statsRes, transRes, categoryRes, monthlyRes, budgetRes, vaultsRes]
+      if (responses.some(res => res.status === 401 || res.status === 403)) {
         handleLogout()
         return
       }
-      const statsData = await statsRes.json()
+
+      const [statsData, transData, categoryData, monthlyData, budgetData, vaultsData] = await Promise.all(
+        responses.map(res => res.json())
+      )
+
       if (!statsRes.ok) throw new Error(statsData.error || 'Failed to fetch stats')
-      setStats(statsData)
-
-      const transRes = await fetch(`${API_URL}/api/transaction?limit=5&sortBy=date&order=desc`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      if (transRes.status === 401 || transRes.status === 403) {
-        handleLogout()
-        return
-      }
-      const transData = await transRes.json()
       if (!transRes.ok) throw new Error(transData.error || 'Failed to fetch transactions')
-      setRecentTransactions(transData.transactions)
-
-      const categoryRes = await fetch(`${API_URL}/api/transaction/stats/category`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      if (categoryRes.status === 401 || categoryRes.status === 403) {
-        handleLogout()
-        return
-      }
-      const categoryData = await categoryRes.json()
       if (!categoryRes.ok) throw new Error(categoryData.error || 'Failed to fetch category stats')
-      setCategoryData(categoryData)
-
-      const monthlyRes = await fetch(`${API_URL}/api/transaction/stats/monthly`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      if (monthlyRes.status === 401 || monthlyRes.status === 403) {
-        handleLogout()
-        return
-      }
-      const monthlyData = await monthlyRes.json()
       if (!monthlyRes.ok) throw new Error(monthlyData.error || 'Failed to fetch monthly stats')
-      setMonthlyData(monthlyData)
-
-      const budgetRes = await fetch(`${API_URL}/api/budget`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      if (budgetRes.status === 401 || budgetRes.status === 403) {
-        handleLogout()
-        return
-      }
-      const budgetData = await budgetRes.json()
       if (!budgetRes.ok) throw new Error(budgetData.error || 'Failed to fetch budget goals')
+      if (!vaultsRes.ok) throw new Error(vaultsData.error || 'Failed to fetch savings vaults')
+
+      setStats(statsData)
+      setRecentTransactions(transData.transactions)
+      setCategoryData(categoryData)
+      setMonthlyData(monthlyData)
       setBudgetGoals(budgetData)
+      setVaults(vaultsData)
 
       setLoading(false)
     } catch (error) {
@@ -149,7 +130,7 @@ export default function Dashboard({ setIsAuthenticated }) {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     setIsAuthenticated(false)
-    navigate('/login')
+    navigate('/')
   }
 
   const handleDeleteAccount = async () => {
@@ -174,7 +155,7 @@ export default function Dashboard({ setIsAuthenticated }) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
       setIsAuthenticated(false)
-      navigate('/login')
+      navigate('/')
     } catch (err) {
       setDeleteError(err.message)
     } finally {
@@ -330,6 +311,16 @@ export default function Dashboard({ setIsAuthenticated }) {
                   }`}
                 >
                   Converter
+                </button>
+                <button
+                  onClick={() => navigate('/savings')}
+                  className={`px-3.5 py-1.5 rounded-lg text-sm transition-all duration-300 font-semibold border-b-2 ${
+                    isActive('/savings')
+                      ? 'text-primary font-bold border-primary'
+                      : 'text-main hover:text-muted hover:bg-main/5 border-transparent'
+                  }`}
+                >
+                  Vaults
                 </button>
               </div>
               <ThemeSelector />
@@ -516,7 +507,11 @@ export default function Dashboard({ setIsAuthenticated }) {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip contentStyle={{ backgroundColor: 'var(--box-bg)', backdropFilter: 'blur(16px)', borderRadius: '12px', border: '1px solid var(--border-color)', color: 'var(--text-main)' }} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: 'var(--box-bg)', backdropFilter: 'blur(16px)', borderRadius: '12px', border: '1px solid var(--border-color)' }} 
+                        itemStyle={{ color: 'var(--text-main)' }} 
+                        labelStyle={{ color: 'var(--text-main)' }} 
+                      />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -541,7 +536,11 @@ export default function Dashboard({ setIsAuthenticated }) {
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" opacity={0.3} />
                       <XAxis dataKey="month" stroke="var(--text-muted)" fontSize={11} />
                       <YAxis stroke="var(--text-muted)" fontSize={11} />
-                      <Tooltip contentStyle={{ backgroundColor: 'var(--box-bg)', backdropFilter: 'blur(16px)', borderRadius: '12px', border: '1px solid var(--border-color)', color: 'var(--text-main)' }} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: 'var(--box-bg)', backdropFilter: 'blur(16px)', borderRadius: '12px', border: '1px solid var(--border-color)' }} 
+                        itemStyle={{ color: 'var(--text-main)' }} 
+                        labelStyle={{ color: 'var(--text-main)' }} 
+                      />
                       <Line type="monotone" dataKey="income" stroke="#10b981" strokeWidth={3} dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
                       <Line type="monotone" dataKey="expense" stroke="#ef4444" strokeWidth={3} dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
                     </LineChart>
@@ -686,8 +685,63 @@ export default function Dashboard({ setIsAuthenticated }) {
             </div>
           </section>
 
+          {/* Savings Vaults Row */}
+          <section className="grid grid-cols-1 gap-8 mt-8">
+            <div className="glass-card p-8 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-lg font-bold text-main">Savings Vaults</h3>
+                    <p className="text-xs text-muted font-medium">Track your goals</p>
+                  </div>
+                  <button
+                    onClick={() => navigate('/savings')}
+                    className="text-xs font-bold text-primary hover:opacity-85 border border-primary/20 px-3.5 py-1.5 rounded-lg bg-primary/5 transition-all"
+                  >
+                    Manage
+                  </button>
+                </div>
+                {vaults.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {vaults.map((vault) => {
+                      const percentage = Math.min((vault.currentAmount / vault.targetAmount) * 100, 100)
+                      return (
+                        <div key={vault.id} className="p-4 rounded-xl border border-main/10 bg-bg-main space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold text-main">{vault.name}</span>
+                            <span className="text-xs font-bold text-primary">{percentage.toFixed(0)}%</span>
+                          </div>
+                          <div className="w-full bg-main/10 rounded-full h-2 overflow-hidden border border-main/10">
+                            <div
+                              className="h-full rounded-full transition-all duration-500 bg-primary"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                          <div className="flex justify-between text-xs font-medium text-muted">
+                            <span>{currency.symbol}{vault.currentAmount.toFixed(0)} saved</span>
+                            <span>{currency.symbol}{vault.targetAmount.toFixed(0)} target</span>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 space-y-3">
+                    <p className="text-sm text-muted">No savings vaults created yet.</p>
+                    <button
+                      onClick={() => navigate('/savings')}
+                      className="text-xs font-bold text-primary hover:opacity-85 border border-primary/20 px-3.5 py-1.5 rounded-lg bg-primary/5 transition-all"
+                    >
+                      + Create Vault
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
           {/* Account Settings / Delete Option */}
-          <section className="flex justify-center pt-4">
+          <section className="flex justify-center pt-8">
             <button
               onClick={() => { setShowDeleteModal(true); setDeletePassword(''); setDeleteError('') }}
               className="px-6 py-2.5 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-all font-semibold text-xs tracking-wider uppercase"
@@ -735,7 +789,7 @@ export default function Dashboard({ setIsAuthenticated }) {
                     <label className="block text-xs font-bold text-muted uppercase tracking-wider mb-1.5">Monthly Limit ({currency.symbol})</label>
                     <input
                       type="number"
-                      step="0.01"
+                      step="any"
                       placeholder="e.g. 5000"
                       value={modalBudgetData.limit}
                       onChange={(e) => setModalBudgetData({ ...modalBudgetData, limit: e.target.value })}
@@ -762,7 +816,7 @@ export default function Dashboard({ setIsAuthenticated }) {
                       <label className="block text-xs font-bold text-muted uppercase tracking-wider mb-1.5">Amount ({currency.symbol})</label>
                       <input
                         type="number"
-                        step="0.01"
+                        step="any"
                         placeholder="0.00"
                         value={modalFormData.amount}
                         onChange={(e) => setModalFormData({ ...modalFormData, amount: e.target.value })}

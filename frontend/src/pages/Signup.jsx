@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import API_URL from '../config/api'
+import ThemeToggle from '../components/ThemeToggle'
 
 export default function Signup({ setIsAuthenticated }) {
   const [step, setStep] = useState(1)
@@ -81,7 +82,8 @@ export default function Signup({ setIsAuthenticated }) {
   }
 
   return (
-    <div className="min-h-screen bg-bg-main flex">
+    <div className="min-h-screen bg-bg-main flex relative">
+      <ThemeToggle className="absolute top-6 right-6 z-50" />
       {/* Left Side - Auth Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 relative z-10">
         <div className="w-full max-w-md space-y-8">
@@ -116,6 +118,8 @@ export default function Signup({ setIsAuthenticated }) {
                 <label className="block text-sm font-bold text-secondary mb-2 uppercase tracking-wider">Full Name</label>
                 <input
                   type="text"
+                  name="name"
+                  autoComplete="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted"
@@ -128,6 +132,8 @@ export default function Signup({ setIsAuthenticated }) {
                 <label className="block text-sm font-bold text-secondary mb-2 uppercase tracking-wider">Email Address</label>
                 <input
                   type="email"
+                  name="email"
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted"
@@ -140,6 +146,8 @@ export default function Signup({ setIsAuthenticated }) {
                 <label className="block text-sm font-bold text-secondary mb-2 uppercase tracking-wider">Password</label>
                 <input
                   type="password"
+                  name="password"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted mb-2"
@@ -165,6 +173,8 @@ export default function Signup({ setIsAuthenticated }) {
                 <label className="block text-sm font-bold text-secondary mb-2 uppercase tracking-wider">Confirm Password</label>
                 <input
                   type="password"
+                  name="confirmPassword"
+                  autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full bg-surface border border-white/10 text-main rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted"
