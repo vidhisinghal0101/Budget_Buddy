@@ -82,7 +82,7 @@ export default function Signup({ setIsAuthenticated }) {
   }
 
   return (
-    <div className="min-h-screen bg-bg-main flex relative">
+    <div className="min-h-screen bg-transparent flex relative">
       <ThemeToggle className="absolute top-6 right-6 z-50" />
       {/* Left Side - Auth Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 relative z-10">

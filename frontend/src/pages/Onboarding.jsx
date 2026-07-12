@@ -87,7 +87,7 @@ export default function Onboarding({ setIsAuthenticated }) {
   }
 
   return (
-    <div className="min-h-screen bg-bg-main flex items-center justify-center p-4">
+    <div className="min-h-screen bg-transparent flex items-center justify-center p-4">
       <div className="w-full max-w-xl">
         <div className="bg-surface rounded-3xl shadow-2xl p-8 sm:p-12 border border-white/5 relative overflow-hidden">
           

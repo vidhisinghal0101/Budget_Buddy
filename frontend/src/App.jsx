@@ -15,8 +15,22 @@ function App() {
     return !!localStorage.getItem('token')
   })
 
+  // Global Parallax Scroll Listener
+  useEffect(() => {
+    const handleScroll = () => {
+      document.body.style.setProperty('--scroll-y', `${window.scrollY}px`);
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      {isAuthenticated && <div className="background-overlay"></div>}
       <Routes>
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
         <Route path="/signup" element={<Signup setIsAuthenticated={setIsAuthenticated} />} />

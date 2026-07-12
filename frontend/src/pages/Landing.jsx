@@ -1,9 +1,21 @@
 import { Link } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import ThemeToggle from '../components/ThemeToggle'
+import { useEffect } from 'react'
 
 export default function Landing() {
   const { colorTheme } = useTheme()
+
+  // FORCE hide any cached background-overlay from index.html
+  useEffect(() => {
+    const overlay = document.querySelector('.background-overlay');
+    if (overlay) {
+      overlay.style.display = 'none';
+    }
+    return () => {
+      if (overlay) overlay.style.display = 'block';
+    }
+  }, []);
 
   const themeColors = {
     emerald: 'text-emerald-400',
@@ -17,7 +29,7 @@ export default function Landing() {
   const primaryText = themeColors[colorTheme] || themeColors.purple
 
   return (
-    <div className="min-h-screen bg-bg-main text-main font-sans selection:bg-primary-light">
+    <div className="min-h-screen bg-bg-main text-main font-sans selection:bg-primary-light flex flex-col">
       
       {/* Navigation */}
       <nav className="fixed w-full z-50 bg-bg-main/80 backdrop-blur-md border-b border-white/5">
@@ -42,7 +54,9 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* Main Content (grows to push footer down) */}
+      <main className="flex-grow">
+        {/* Hero Section */}
       <div className="relative pt-32 pb-20 sm:pt-40 sm:pb-24 overflow-hidden">
         {/* Abstract Glow (Slower Parallax) */}
         <div 
@@ -127,6 +141,8 @@ export default function Landing() {
       </div>
 
 
+
+      </main>
 
       {/* Footer */}
       <footer className="bg-surface border-t border-white/5 py-12">
