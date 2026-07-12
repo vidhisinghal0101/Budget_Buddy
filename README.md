@@ -4,13 +4,6 @@ A full-stack personal finance management application to track income, expenses, 
 
 ---
 
-## 🌐 Live Demo
-
-- **Frontend**: [https://capstone-sem3-green.vercel.app](https://capstone-sem3-green.vercel.app)
-- **Backend API**: [https://capstone-sem3-wjbw.onrender.com](https://capstone-sem3-wjbw.onrender.com)
-- **API Health Check**: [https://capstone-sem3-wjbw.onrender.com/api/health](https://capstone-sem3-wjbw.onrender.com/api/health)
-
-> **Note**: Backend is hosted on Render's free tier, so the first request may take ~30 seconds to wake up the server.
 
 ---
 
