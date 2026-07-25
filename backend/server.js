@@ -15,12 +15,20 @@ import authRoutes from './routes/auth.js';
 import transactionRoutes from './routes/transaction.js';
 import budgetRoutes from './routes/budget.js';
 import savingsRoutes from './routes/savings.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static frontend assets (built files from ../frontend/dist)
+const frontendDist = path.resolve(__dirname, '..', 'frontend', 'dist');
+app.use(express.static(frontendDist));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/transaction', transactionRoutes);
@@ -29,6 +37,11 @@ app.use('/api/savings', savingsRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', app: 'Budget Buddy API' });
+});
+
+// Fallback: serve index.html for any unknown route (SPA support)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendDist, 'index.html'));
 });
 
 // Global Error Handler Middleware
