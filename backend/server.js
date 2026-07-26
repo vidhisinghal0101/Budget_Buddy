@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ override: true });
 
 // Global catch-all for unhandled promises and exceptions (Prevents Node.js from crashing)
 process.on('uncaughtException', (err) => {
