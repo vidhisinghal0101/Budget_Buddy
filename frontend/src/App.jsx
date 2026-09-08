@@ -10,6 +10,8 @@ import Budget from './pages/Budget'
 import CurrencyConverter from './pages/CurrencyConverter'
 import Savings from './pages/Savings'
 import Landing from './pages/Landing'
+import AIChatbot from './components/AIChatbot'
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return !!localStorage.getItem('token')
@@ -58,6 +60,7 @@ function App() {
         />
         <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Landing />} />
       </Routes>
+      {isAuthenticated && <AIChatbot />}
     </Router>
   )
 }
