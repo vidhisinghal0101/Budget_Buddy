@@ -225,7 +225,15 @@ export default function Signup({ setIsAuthenticated }) {
                   disabled={loading || pin.length !== 4}
                   className="w-2/3 bg-primary hover:bg-primary-hover text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
                 >
-                  {loading ? 'Creating...' : 'Create Account'}
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-2 h-7">
+                      <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '-0.3s' }}></div>
+                      <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '-0.15s' }}></div>
+                      <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+                    </div>
+                  ) : (
+                    'Create Account'
+                  )}
                 </button>
               </div>
             </form>

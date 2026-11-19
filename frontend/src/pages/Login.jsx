@@ -103,7 +103,15 @@ export default function Login({ setIsAuthenticated }) {
               disabled={loading}
               className="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
             >
-              {loading ? 'Authenticating...' : 'Sign In'}
+              {loading ? (
+                <div className="flex items-center justify-center gap-2 h-7">
+                  <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '-0.3s' }}></div>
+                  <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '-0.15s' }}></div>
+                  <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+                </div>
+              ) : (
+                'Sign In'
+              )}
             </button>
           </form>
 

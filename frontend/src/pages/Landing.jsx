@@ -43,11 +43,8 @@ export default function Landing() {
             </div>
             <div className="flex items-center space-x-4">
               <ThemeToggle />
-              <Link to="/login" className="text-sm font-semibold text-secondary hover:text-main transition-colors">
-                Sign in
-              </Link>
-              <Link to="/signup" className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5">
-                Get Started
+              <Link to="/dashboard" className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5">
+                Open App
               </Link>
             </div>
           </div>
@@ -93,7 +90,7 @@ export default function Landing() {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/signup" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-primary hover:bg-primary-hover text-white font-bold text-lg shadow-xl shadow-primary/20 transition-all hover:-translate-y-1">
+            <Link to="/dashboard" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-primary hover:bg-primary-hover text-white font-bold text-lg shadow-xl shadow-primary/20 transition-all hover:-translate-y-1">
               Start Building Wealth
             </Link>
             <a href="#features" className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-surface border border-white/10 hover:border-white/20 text-main font-bold text-lg transition-all hover:bg-white/5">

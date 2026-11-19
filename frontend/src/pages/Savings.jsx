@@ -42,23 +42,16 @@ export default function Savings() {
 
   const fetchVaults = async () => {
     try {
-      const token = localStorage.getItem('token')
-      if (!token) return navigate('/')
+      const token = localStorage.getItem('token') || 'local-guest-token'
 
       const res = await fetch(`${API_URL}/api/savings`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       
-      if (res.status === 401 || res.status === 403) {
-        localStorage.clear()
-        navigate('/')
-        return
-      }
-      
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed to fetch vaults')
+      if (!res.ok) throw new Error(data?.error || 'Failed to fetch vaults')
       
-      setVaults(data)
+      setVaults(data || [])
     } catch (err) {
       setError(err.message)
     } finally {
@@ -244,15 +237,6 @@ export default function Savings() {
                 </button>
               </div>
               <ThemeSelector />
-              <button
-                onClick={() => {
-                  localStorage.clear()
-                  navigate('/')
-                }}
-                className="px-3.5 py-1.5 text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"
-              >
-                Logout
-              </button>
             </div>
           </div>
         </div>

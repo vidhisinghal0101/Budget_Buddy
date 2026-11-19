@@ -33,10 +33,6 @@ export default function Dashboard({ setIsAuthenticated }) {
 
   // Modals state
   const [activeModal, setActiveModal] = useState(null) // 'income' | 'expense' | 'budget' | null
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [deletePassword, setDeletePassword] = useState('')
-  const [deleteError, setDeleteError] = useState('')
-  const [deleteLoading, setDeleteLoading] = useState(false)
 
   // Form states
   const [modalFormData, setModalFormData] = useState({
@@ -78,12 +74,7 @@ export default function Dashboard({ setIsAuthenticated }) {
 
   const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        handleLogout()
-        return
-      }
-
+      const token = localStorage.getItem('token') || 'local-guest-token'
       const headers = { Authorization: `Bearer ${token}` }
 
       const [statsRes, transRes, categoryRes, monthlyRes, budgetRes, vaultsRes] = await Promise.all([
@@ -96,70 +87,29 @@ export default function Dashboard({ setIsAuthenticated }) {
       ])
 
       const responses = [statsRes, transRes, categoryRes, monthlyRes, budgetRes, vaultsRes]
-      if (responses.some(res => res.status === 401 || res.status === 403)) {
-        handleLogout()
-        return
-      }
 
       const [statsData, transData, categoryData, monthlyData, budgetData, vaultsData] = await Promise.all(
         responses.map(res => res.json())
       )
 
-      if (!statsRes.ok) throw new Error(statsData.error || 'Failed to fetch stats')
-      if (!transRes.ok) throw new Error(transData.error || 'Failed to fetch transactions')
-      if (!categoryRes.ok) throw new Error(categoryData.error || 'Failed to fetch category stats')
-      if (!monthlyRes.ok) throw new Error(monthlyData.error || 'Failed to fetch monthly stats')
-      if (!budgetRes.ok) throw new Error(budgetData.error || 'Failed to fetch budget goals')
-      if (!vaultsRes.ok) throw new Error(vaultsData.error || 'Failed to fetch savings vaults')
+      if (!statsRes.ok) throw new Error(statsData?.error || 'Failed to fetch stats')
+      if (!transRes.ok) throw new Error(transData?.error || 'Failed to fetch transactions')
+      if (!categoryRes.ok) throw new Error(categoryData?.error || 'Failed to fetch category stats')
+      if (!monthlyRes.ok) throw new Error(monthlyData?.error || 'Failed to fetch monthly stats')
+      if (!budgetRes.ok) throw new Error(budgetData?.error || 'Failed to fetch budget goals')
+      if (!vaultsRes.ok) throw new Error(vaultsData?.error || 'Failed to fetch savings vaults')
 
       setStats(statsData)
-      setRecentTransactions(transData.transactions)
-      setCategoryData(categoryData)
-      setMonthlyData(monthlyData)
-      setBudgetGoals(budgetData)
-      setVaults(vaultsData)
+      setRecentTransactions(transData.transactions || [])
+      setCategoryData(categoryData || [])
+      setMonthlyData(monthlyData || [])
+      setBudgetGoals(budgetData || [])
+      setVaults(vaultsData || [])
 
       setLoading(false)
     } catch (error) {
       console.error(error)
       setLoading(false)
-    }
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    setIsAuthenticated(false)
-    navigate('/')
-  }
-
-  const handleDeleteAccount = async () => {
-    setDeleteError('')
-    if (!deletePassword) {
-      setDeleteError('Please enter your password')
-      return
-    }
-    setDeleteLoading(true)
-    try {
-      const token = localStorage.getItem('token')
-      const res = await fetch(`${API_URL}/api/auth/delete-account`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ password: deletePassword })
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed to delete account')
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      setIsAuthenticated(false)
-      navigate('/')
-    } catch (err) {
-      setDeleteError(err.message)
-    } finally {
-      setDeleteLoading(false)
     }
   }
 
@@ -324,12 +274,6 @@ export default function Dashboard({ setIsAuthenticated }) {
                 </button>
               </div>
               <ThemeSelector />
-              <button
-                onClick={handleLogout}
-                className="px-3.5 py-1.5 text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"
-              >
-                Logout
-              </button>
             </div>
           </div>
         </div>
@@ -356,7 +300,7 @@ export default function Dashboard({ setIsAuthenticated }) {
               <div className="space-y-1">
                 <p className="text-xs uppercase tracking-widest font-semibold text-primary">{getFormattedDate()}</p>
                 <h1 className="text-4xl font-extrabold tracking-tight text-main">
-                  {getGreeting()}, {user?.name || 'User'}
+                  {getGreeting()}!
                 </h1>
               </div>
               <div className="pt-2 border-t border-main/50">
@@ -739,16 +683,6 @@ export default function Dashboard({ setIsAuthenticated }) {
               </div>
             </div>
           </section>
-
-          {/* Account Settings / Delete Option */}
-          <section className="flex justify-center pt-8">
-            <button
-              onClick={() => { setShowDeleteModal(true); setDeletePassword(''); setDeleteError('') }}
-              className="px-6 py-2.5 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 transition-all font-semibold text-xs tracking-wider uppercase"
-            >
-              Delete Account
-            </button>
-          </section>
         </main>
       )}
 
@@ -878,61 +812,6 @@ export default function Dashboard({ setIsAuthenticated }) {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Account Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
-          <div className="glass-card p-8 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-red-500/20">
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-14 h-14 bg-red-500/10 rounded-full mb-4">
-                <svg className="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-                </svg>
-              </div>
-              <h2 className="text-2xl font-bold text-main">Delete Account</h2>
-              <p className="text-sm text-muted mt-2">
-                This will permanently delete your account, all transactions, and budget goals. This action <span className="font-bold text-red-500">cannot be undone</span>.
-              </p>
-            </div>
-
-            {deleteError && (
-              <div className="bg-red-500/10 border border-red-500/25 text-red-500 px-4 py-3 rounded-xl text-sm mb-4">
-                {deleteError}
-              </div>
-            )}
-
-            <div className="mb-6">
-              <label className="block text-xs font-bold text-muted uppercase tracking-wider mb-2">
-                Enter your password to confirm
-              </label>
-              <input
-                type="password"
-                value={deletePassword}
-                onChange={(e) => setDeletePassword(e.target.value)}
-                className="w-full px-4 py-3 border border-main rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none text-sm transition-all"
-                placeholder="Your password"
-                autoFocus
-              />
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => { setShowDeleteModal(false); setDeletePassword(''); setDeleteError('') }}
-                className="flex-1 py-3 rounded-xl border border-main text-muted hover:text-main hover:bg-main/5 transition-all text-sm font-semibold"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteAccount}
-                disabled={deleteLoading}
-                className="flex-1 py-3 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all font-bold text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-600/20"
-              >
-                {deleteLoading ? 'Deleting...' : 'Delete Permanently'}
-              </button>
-            </div>
           </div>
         </div>
       )}

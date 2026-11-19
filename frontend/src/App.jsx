@@ -1,9 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
-import ForgotPassword from './pages/ForgotPassword'
-import ResetPassword from './pages/ResetPassword'
+import { useEffect } from 'react'
 import Dashboard from './pages/Dashboard'
 import Transactions from './pages/Transactions'
 import Budget from './pages/Budget'
@@ -13,10 +9,6 @@ import Landing from './pages/Landing'
 import AIChatbot from './components/AIChatbot'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return !!localStorage.getItem('token')
-  })
-
   // Global Parallax Scroll Listener
   useEffect(() => {
     const handleScroll = () => {
@@ -32,35 +24,25 @@ function App() {
 
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      {isAuthenticated && <div className="background-overlay"></div>}
+      <div className="background-overlay"></div>
       <Routes>
-        <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
-        <Route path="/signup" element={<Signup setIsAuthenticated={setIsAuthenticated} />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route 
-          path="/dashboard" 
-          element={isAuthenticated ? <Dashboard setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/" />} 
-        />
-        <Route 
-          path="/transactions" 
-          element={isAuthenticated ? <Transactions /> : <Navigate to="/" />} 
-        />
-        <Route 
-          path="/budget" 
-          element={isAuthenticated ? <Budget /> : <Navigate to="/" />} 
-        />
-        <Route 
-          path="/savings" 
-          element={isAuthenticated ? <Savings /> : <Navigate to="/" />} 
-        />
-        <Route 
-          path="/converter" 
-          element={isAuthenticated ? <CurrencyConverter setIsAuthenticated={setIsAuthenticated} /> : <Navigate to="/" />} 
-        />
-        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Landing />} />
+        {/* Direct access to full website without login / signup */}
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/transactions" element={<Transactions />} />
+        <Route path="/budget" element={<Budget />} />
+        <Route path="/savings" element={<Savings />} />
+        <Route path="/converter" element={<CurrencyConverter />} />
+        <Route path="/landing" element={<Landing />} />
+
+        {/* Auth routes redirected directly to main app */}
+        <Route path="/login" element={<Navigate to="/" replace />} />
+        <Route path="/signup" element={<Navigate to="/" replace />} />
+        <Route path="/forgot-password" element={<Navigate to="/" replace />} />
+        <Route path="/reset-password/:token" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      {isAuthenticated && <AIChatbot />}
+      <AIChatbot />
     </Router>
   )
 }

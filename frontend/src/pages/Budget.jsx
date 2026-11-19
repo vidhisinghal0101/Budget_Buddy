@@ -173,15 +173,6 @@ export default function Budget() {
                 </button>
               </div>
               <ThemeSelector />
-              <button
-                onClick={() => {
-                  localStorage.clear()
-                  navigate('/')
-                }}
-                className="px-3.5 py-1.5 text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-all"
-              >
-                Logout
-              </button>
             </div>
           </div>
         </div>
